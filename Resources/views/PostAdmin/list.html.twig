@@ -1,0 +1,42 @@
+{% extends 'RzNewsBundle:PostAdmin:list.html.twig' %}
+
+{% block list_header %}
+<div class="box-header with-border">
+	<h3 class="box-title">
+		<i class="fa fa-fw fa-globe fa-lg"></i>
+		<div class="btn-group">
+			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+				<strong class="text-info">{{ currentSite.name }}</strong> <span class="caret"></span>
+			</button>
+			<ul class="dropdown-menu" role="menu">
+				{% for site in sites %}
+					<li>
+						<a href="{{ admin.generateUrl('list', { 'site': site.id, 'collection': current_collection.slug }) }}">
+							{% if currentSite and site.id == currentSite.id %}
+								<span class="pull-right">
+	                                    <i class="fa fa-check"></i>
+	                                </span>
+							{% endif %}
+							{{ site.name }}
+						</a>
+					</li>
+				{% endfor%}
+			</ul>
+		</div>
+	</h3>
+</div>
+{% endblock %}
+
+{% block preview %}
+	{% if not app.request.get('hide_collection') %}
+		<ul class="nav nav-pills rz-nav-pills-list">
+			{% for collection in collections %}
+				{% if current_collection and collection.slug == current_collection.slug %}
+					<li class="active"><a class="text-uppercase" href="{{ admin.generateUrl('list', { 'collection': collection.slug, 'site': currentSite.id }) }}">{{ collection.name }}</a></li>
+				{% else %}
+					<li><a class="text-uppercase" href="{{ admin.generateUrl('list', { 'collection': collection.slug, 'site': currentSite.id }) }}">{{ collection.name }}</a></li>
+				{% endif %}
+			{% endfor %}
+		</ul>
+	{% endif %}
+{% endblock %}

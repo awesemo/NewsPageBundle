@@ -1,0 +1,354 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" datatype="plaintext" original="file.ext">
+        <body>
+            <trans-unit id="filter.label_publication_date_start">
+                <source>filter.label_publication_date_start</source>
+                <target>Publication Start Date</target>
+            </trans-unit>
+            <trans-unit id="filter.label_collection">
+                <source>filter.label_collection</source>
+                <target>Collection</target>
+            </trans-unit>
+            <trans-unit id="rz_news_settings">
+                <source>rz_news_settings</source>
+                <target>News Settings</target>
+            </trans-unit>
+            <trans-unit id="form.label_settings">
+                <source>form.label_settings</source>
+                <target>News Provider Settings</target>
+            </trans-unit>
+            <trans-unit id="rz_news_category">
+                <source>rz_news_category</source>
+                <target>News Category</target>
+            </trans-unit>
+            <trans-unit id="form.label_post_has_category">
+                <source>form.label_post_has_category</source>
+                <target></target>
+            </trans-unit>
+            <trans-unit id="label_post_has_category">
+                <source>label_post_has_category</source>
+                <target>Posts by Category</target>
+            </trans-unit>
+						<trans-unit id="form.label_category">
+                <source>form.label_category</source>
+                <target>Category</target>
+            </trans-unit>
+            <trans-unit id="rz_news_post_has_media_media">
+                <source>rz_news_post_has_media_media</source>
+                <target>Media</target>
+            </trans-unit>
+            <trans-unit id="tab.rz_news_post_has_media_media.rz_news_post_has_media_media">
+                <source>tab.rz_news_post_has_media_media.rz_news_post_has_media_media</source>
+                <target>Media</target>
+            </trans-unit>
+            <trans-unit id="rz_news_post_has_media_content">
+                <source>rz_news_post_has_media_content</source>
+                <target>Content</target>
+            </trans-unit>
+            <trans-unit id="tab.rz_news_post_has_media_content.rz_news_post_has_media_content">
+                <source>tab.rz_news_post_has_media_content.rz_news_post_has_media_content</source>
+                <target>Content</target>
+            </trans-unit>
+            <trans-unit id="rz_news_media">
+                <source>rz_news_media</source>
+                <target>Media Collection</target>
+            </trans-unit>
+						<trans-unit id="form.label_post_has_media">
+                <source>form.label_post_has_media</source>
+                <target></target>
+            </trans-unit>
+						<trans-unit id="form.label_post_has_media_header">
+                <source>form.label_post_has_media_header</source>
+                <target>Media Item #</target>
+            </trans-unit>
+						<trans-unit id="label_post_has_media">
+                <source>label_post_has_media</source>
+                <target>Post Media Details</target>
+            </trans-unit>
+						<trans-unit id="form.label_media">
+                <source>form.label_media</source>
+                <target>Media</target>
+            </trans-unit>
+						<trans-unit id="tab.rz_news_related_articles">
+                <source>tab.rz_news_related_articles</source>
+                <target>Related Post</target>
+            </trans-unit>
+						<trans-unit id="rz_news_related_articles">
+                <source>rz_news_related_articles</source>
+                <target>Related Posts</target>
+            </trans-unit>
+						<trans-unit id="form.label_related_articles">
+                <source>form.label_related_articles</source>
+                <target></target>
+            </trans-unit>
+						<trans-unit id="form.label_related_article">
+                <source>form.label_related_article</source>
+                <target>Post</target>
+            </trans-unit>
+						<trans-unit id="label_related_articles">
+                <source>label_related_articles</source>
+                <target>Post</target>
+            </trans-unit>
+						<trans-unit id="form.label_position">
+                <source>form.label_position</source>
+                <target>Position</target>
+            </trans-unit>
+					<trans-unit id="tab.rz_news_suggested_articles">
+                <source>tab.rz_news_suggested_articles</source>
+                <target>Suggested Post</target>
+            </trans-unit>
+						<trans-unit id="rz_news_suggested_articles">
+                <source>rz_news_suggested_articles</source>
+                <target>Suggested Posts</target>
+            </trans-unit>
+						<trans-unit id="form.label_suggested_articles">
+                <source>form.label_suggested_articles</source>
+                <target></target>
+            </trans-unit>
+						<trans-unit id="form.label_suggested_article">
+                <source>form.label_suggested_article</source>
+                <target>Post</target>
+            </trans-unit>
+						<trans-unit id="label_suggested_articles">
+                <source>label_suggested_articles</source>
+                <target>Post</target>
+            </trans-unit>
+						<trans-unit id="filter.label_site">
+                <source>filter.label_site</source>
+                <target>Site</target>
+            </trans-unit>
+						<trans-unit id="form.label_site">
+                <source>form.label_site</source>
+                <target>Site</target>
+            </trans-unit>
+            <trans-unit id="rz.news.block.post">
+                <source>rz.news.block.post</source>
+                <target>Post Block (RZ)</target>
+            </trans-unit>
+            <trans-unit id="group_content">
+                <source>group_content</source>
+                <target>Content</target>
+            </trans-unit>
+            <trans-unit id="side_nav_title">
+                <source>side_nav_title</source>
+                <target>Post Page</target>
+            </trans-unit>
+            <trans-unit id="side_nav_subtitle">
+                <source>side_nav_subtitle</source>
+                <target>Auto Generated</target>
+            </trans-unit>
+            <trans-unit id="side_nav_legend_1">
+                <source>side_nav_legend_1</source>
+                <target>Page</target>
+            </trans-unit>
+            <trans-unit id="side_nav_legend_2">
+                <source>side_nav_legend_2</source>
+                <target>Canonical</target>
+            </trans-unit>
+            <trans-unit id="side_nav_no_record_found">
+                <source>side_nav_no_record_found</source>
+                <target>Pages will be generated on save.</target>
+            </trans-unit>
+            <trans-unit id="help.provider_page_template_code">
+                <source>help.provider_page_template_code</source>
+                <target><![CDATA[<p><i class="fa fa-fw fa-info-circle"></i><em>Page template code can be changed via Page Admin</em></p>]]></target>
+            </trans-unit>
+            <trans-unit id="help.provider_page_template_code_new">
+                <source>help.provider_page_template_code_new</source>
+                <target><![CDATA[<p><i class="fa fa-fw fa-info-circle"></i><em>Page template code will be the default post page template</em></p>]]></target>
+            </trans-unit>
+            <trans-unit id="help.provider_block_template">
+                <source>help.provider_block_template</source>
+                <target><![CDATA[<p><i class="fa fa-fw fa-info-circle"></i><em>Block template code can be changed via Page Admin</em></p>]]></target>
+            </trans-unit>
+            <trans-unit id="help.provider_block_template_new">
+                <source>help.provider_block_template_new</source>
+                <target><![CDATA[<p><i class="fa fa-fw fa-info-circle"></i><em>Block template  will be the default PostBlock template</em></p>]]></target>
+            </trans-unit>
+						<trans-unit id="tab.rz_news_seo_settings">
+                <source>tab.rz_news_seo_settings</source>
+                <target>SEO</target>
+            </trans-unit>
+						<trans-unit id="rz_news_seo_settings">
+                <source>rz_news_seo_settings</source>
+                <target>SEOs</target>
+            </trans-unit>
+            <trans-unit id="group_status">
+                <source>group_status</source>
+                <target>Details</target>
+            </trans-unit>
+						<trans-unit id="tab.rz_news">
+                <source>tab.rz_news</source>
+                <target>News</target>
+            </trans-unit>
+						<trans-unit id="tab.rz_news_settings">
+                <source>tab.rz_news_settings</source>
+                <target>Settings</target>
+            </trans-unit>
+						<trans-unit id="tab.rz_news_tags">
+                <source>tab.rz_news_tags</source>
+                <target>Tags</target>
+            </trans-unit>
+						<trans-unit id="tab.rz_news_category">
+                <source>tab.rz_news_category</source>
+                <target>Category</target>
+            </trans-unit>
+						<trans-unit id="tab.rz_news_media">
+                <source>tab.rz_news_media</source>
+                <target>Gallery</target>
+            </trans-unit>
+            <trans-unit id="list.label_post_title">
+                <source>list.label_post_title</source>
+                <target>Post Title</target>
+            </trans-unit>
+
+            <trans-unit id="list.label_position">
+                <source>list.label_position</source>
+                <target>Position</target>
+            </trans-unit>
+            <trans-unit id="list.label_post_publication_date_start">
+                <source>list.label_post_publication_date_start</source>
+                <target>Publication Date</target>
+            </trans-unit>
+
+            <trans-unit id="filter.label_post_title">
+                <source>filter.label_post_title</source>
+                <target>Post Title</target>
+            </trans-unit>
+
+            <trans-unit id="filter.label_position">
+                <source>filter.label_position</source>
+                <target>Position</target>
+            </trans-unit>
+            <trans-unit id="filter.label_post_publication_date_start">
+                <source>filter.label_post_publication_date_start</source>
+                <target>Publication Date</target>
+            </trans-unit>
+            <trans-unit id="breadcrumb.link_post_has_category_list">
+                <source>breadcrumb.link_post_has_category_list</source>
+                <target>Posts By Category List</target>
+            </trans-unit>
+            <trans-unit id="tab_nav_post">
+                <source>tab_nav_post</source>
+                <target>POST</target>
+            </trans-unit>
+            <trans-unit id="tab_nav_post_by_category">
+                <source>tab_nav_post_by_category</source>
+                <target>POST BY CATEGORY</target>
+            </trans-unit>
+            <trans-unit id="filter.label_post_site">
+                <source>filter.label_post_site</source>
+                <target>Site</target>
+            </trans-unit>
+            <trans-unit id="category_menu_header">
+                <source>category_menu_header</source>
+                <target>Posts</target>
+            </trans-unit>
+            <trans-unit id="category_menu_header_description">
+                <source>category_menu_header_description</source>
+                <target>Categories</target>
+            </trans-unit>
+            <trans-unit id="collection_menu_header">
+                <source>collection_menu_header</source>
+                <target>Posts</target>
+            </trans-unit>
+            <trans-unit id="collection_menu_header_description">
+                <source>collection_menu_header_description</source>
+                <target>Article Types</target>
+            </trans-unit>
+            <trans-unit id="news_page_post_does_not_exist_title">
+                <source>news_page_post_does_not_exist_title</source>
+                <target>OOPS!!</target>
+            </trans-unit>
+            <trans-unit id="news_page_post_does_not_exist">
+                <source>news_page_post_does_not_exist</source>
+                <target>Something went terribly wrong! Please contact the web administrator!</target>
+            </trans-unit>
+            <trans-unit id="breadcrumb.link_post_sets_list">
+                <source>breadcrumb.link_post_sets_list</source>
+                <target>Posts Sets</target>
+            </trans-unit>
+            <trans-unit id="label_post_sets">
+                <source>label_post_sets</source>
+                <target>Posts Sets</target>
+            </trans-unit>
+            <trans-unit id="tab.rz_news_post_sets">
+                <source>tab.rz_news_post_sets</source>
+                <target>Set</target>
+            </trans-unit>
+            <trans-unit id="tab.rz_news_post_sets_has_posts">
+                <source>tab.rz_news_post_sets_has_posts</source>
+                <target>Posts</target>
+            </trans-unit>
+            <trans-unit id="tab.group.rz_news_post">
+                <source>tab.group.rz_news_post</source>
+                <target>Set Details</target>
+            </trans-unit>
+            <trans-unit id="tab.group.rz_news_post_sets_has_posts">
+                <source>tab.group.rz_news_post_sets_has_posts</source>
+                <target>Posts Collection</target>
+            </trans-unit>
+            <trans-unit id="form.label_post_sets_has_posts">
+                <source>form.label_post_sets_has_posts</source>
+                <target></target>
+            </trans-unit>
+            <trans-unit id="form.label_post_sets_has_posts_header">
+                  <source>form.label_post_sets_has_posts_header</source>
+                  <target>Posts Collection #</target>
+            </trans-unit>
+            <trans-unit id="tab.rz_news_post_sets_settings">
+                <source>tab.rz_news_post_sets_settings</source>
+                <target>Settings</target>
+            </trans-unit>
+            <trans-unit id="tab.group.rz_news_post_sets_settings">
+                <source>tab.group.rz_news_post_sets_settings</source>
+                <target>Settings</target>
+            </trans-unit>
+            <trans-unit id="post_sets_collection_menu_header">
+                <source>post_sets_collection_menu_header</source>
+                <target>Posts Sets</target>
+            </trans-unit>
+            <trans-unit id="post_sets_collection_menu_header_description">
+                <source>post_sets_collection_menu_header_description</source>
+                <target>Sets Type</target>
+            </trans-unit>
+            <trans-unit id="label_post_sets_has_posts">
+                <source>label_post_sets_has_posts</source>
+                <target>Posts</target>
+            </trans-unit>
+            <trans-unit id="tab.group.rz_news_post_settings">
+                <source>tab.group.rz_news_post_settings</source>
+                <target>Settings</target>
+            </trans-unit>
+            <trans-unit id="breadcrumb.link_post_sets_create">
+                <source>breadcrumb.link_post_sets_create</source>
+                <target>Create</target>
+            </trans-unit>
+            <trans-unit id="tab.rz_news_post_sets_has_posts.tab.group.rz_news_post_sets_has_posts">
+                <source>tab.rz_news_post_sets_has_posts.tab.group.rz_news_post_sets_has_posts</source>
+                <target>Post</target>
+            </trans-unit>
+						<trans-unit id="tab.rz_news_post_sets_has_posts_settings.tab.group.rz_news_post_sets_has_posts_settings">
+                <source>tab.rz_news_post_sets_has_posts_settings.tab.group.rz_news_post_sets_has_posts_settings</source>
+                <target>Settings</target>
+            </trans-unit>
+            <trans-unit id="list.label_publication_date_end">
+                <source>list.label_publication_date_end</source>
+                <target>Publication end date</target>
+            </trans-unit>
+            <trans-unit id="form.label_publication_date_end">
+                <source>form.label_publication_date_end</source>
+                <target>Publication end date</target>
+            </trans-unit>
+            <trans-unit id="filter.label_publication_date_end">
+                <source>filter.label_publication_date_end</source>
+                <target>Publication end date</target>
+            </trans-unit>
+            <trans-unit id="show.label_publication_date_end">
+                <source>show.label_publication_date_end</source>
+                <target>Publication end date</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

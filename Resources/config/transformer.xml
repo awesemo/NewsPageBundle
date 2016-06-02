@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="rz.news_page.transformer.class">Rz\NewsPageBundle\Entity\Transformer</parameter>
+    </parameters>
+
+    <services>
+        <service id="rz.news_page.transformer" class="%rz.news_page.transformer.class%">
+            <argument type="service" id="sonata.news.manager.post" />
+            <argument type="service" id="sonata.page.manager.page" />
+            <argument type="service" id="sonata.page.manager.block" />
+            <argument type="service" id="sonata.classification.manager.category" />
+            <argument type="service" id="rz.news_page.manager.post_has_page" />
+            <argument type="service" id="sonata.page.block_interactor" />
+            <argument type="service" id="doctrine" />
+        </service>
+    </services>
+</container>

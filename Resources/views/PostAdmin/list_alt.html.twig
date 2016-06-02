@@ -1,0 +1,67 @@
+{% extends 'RzNewsBundle:PostAdmin:list_alt.html.twig' %}
+
+{% block list_header %}
+<div class="box-header with-border">
+	<h3 class="box-title">
+		<i class="fa fa-fw fa-globe fa-lg"></i>
+		<div class="btn-group">
+			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+				<strong class="text-info">{{ currentSite.name }}</strong> <span class="caret"></span>
+			</button>
+			<ul class="dropdown-menu" role="menu">
+				{% for site in sites %}
+					<li>
+						<a href="{{ admin.generateUrl('list', { 'site': site.id, 'collection': current_collection.slug }) }}">
+							{% if currentSite and site.id == currentSite.id %}
+								<span class="pull-right">
+	                                    <i class="fa fa-check"></i>
+	                                </span>
+							{% endif %}
+							{{ site.name }}
+						</a>
+					</li>
+				{% endfor%}
+			</ul>
+		</div>
+	</h3>
+</div>
+{% endblock %}
+
+
+{% block list_table %}
+	{% if not app.request.get('hide_collection') %}
+		<div class="col-xs-12 col-sm-12 col-md-4">
+			<div class="box box-widget widget-user-2">
+				<div class="widget-user-header bg-aqua-active">
+					<div class="widget-user-image">
+						<img class="img-circle" src="{{ asset('bundles/rznews/images/news-placeholder.jpg') }}" alt="User Avatar">
+					</div>
+					<h3 class="widget-user-username"> {{ admin.trans('collection_menu_header', {}, admin.translationdomain) }}</h3>
+					<h5 class="widget-user-desc"> {{ admin.trans('collection_menu_header_description', {}, admin.translationdomain) }}</h5>
+				</div>
+				<div class="box-body">
+					<ul class="nav nav-stacked">
+						{% for collection in collections %}
+							{% if current_collection and collection.slug == current_collection.slug %}
+								<li><a class="text-uppercase" href="{{ admin.generateUrl('list', { 'collection': collection.slug, 'site': currentSite.id }) }}">{{ collection.name }}<span class="pull-right badge bg-aqua-active"><i class="fa fa-fw fa-check-circle-o"></i></span></a></li>
+							{% else %}
+								<li><a class="text-uppercase" href="{{ admin.generateUrl('list', { 'collection': collection.slug, 'site': currentSite.id }) }}">{{ collection.name }}</a></li>
+							{% endif %}
+						{% else %}
+							<li><a class="text-uppercase" href="#">{{ 'no_result'|trans({}, 'SonataAdminBundle') }}</a></li>
+						{% endfor %}
+					</ul>
+				</div>
+			</div>
+		</div>
+	{% endif %}
+	{% if not app.request.get('hide_collection') %}
+		<div class="col-xs-12 col-sm-12 col-md-8 rz-col">
+	{% else %}
+		<div class="col-xs-12 col-sm-12 col-md-12 rz-col">
+	{% endif %}
+	{% block list_inner_table %}
+		{{ parent() }}
+	{% endblock list_inner_table %}
+	</div>
+{% endblock %}

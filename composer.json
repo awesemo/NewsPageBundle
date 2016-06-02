@@ -1,0 +1,31 @@
+{
+    "name": "rz/news-page-bundle",
+    "type": "symfony-bundle",
+    "description": "Symfony2 Bundle",
+    "keywords": ["symfony2", "RZProject"],
+    "homepage": "https://github.com/rzproject/CategoryPageBundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "mell zamora",
+            "email": "mell@rzproject.org",
+            "homepage": "http://www.rzproject.org"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "rz/admin-bundle": "2.0.0.*",
+        "rz/doctrine-orm-admin-bundle": "2.0.0.*",
+        "rz/page-bundle": "2.0.0.*",
+        "rz/block-bundle": "2.0.0.*",
+        "rz/classification-bundle": "2.0.0.*"
+    },
+    "autoload": {
+        "psr-4": { "Rz\\NewsPageBundle\\": "" }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.0.0.x-dev"
+        }
+    }
+}

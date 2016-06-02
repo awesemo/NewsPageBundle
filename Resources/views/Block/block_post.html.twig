@@ -1,0 +1,27 @@
+{% block block %}
+{% set post = block.getSetting('postId') %}
+{% if post %}
+<!-- +++++ Post +++++ -->
+<div id="white">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-8 col-lg-offset-2">
+				<p><bd>{{ post.publicationDateStart|date("M d, Y") }}</bd></p>
+				<h4>{{ post.title }}</h4>
+				<p>{% media post.image, 'reference' with {'class': 'img-responsive'} %}</p>
+				{{ post.content|raw }}
+				<br>
+				<p><bt>TAGS:
+				{% for tag in post.tags %}
+					<a href="#">{{ tag.name }}</a>{% if not loop.last %},{% endif %}
+				{% endfor %}
+				<hr>
+				<p><a href="{% if page.parent %}{{ path(page.parent) }}{% else %}#{% endif %}"># Back</a></p>
+			</div>
+		</div><!-- /row -->
+	</div> <!-- /container -->
+</div><!-- /white -->
+{% else %}
+	<div class="alert alert-danger" role="alert"> <strong>{{ 'news_page_post_does_not_exist_title'|trans({}, 'SonataNewsBundle') }}</strong> {{ 'news_page_post_does_not_exist'|trans({}, 'SonataNewsBundle') }} </div>
+{% endif %}
+{% endblock %}

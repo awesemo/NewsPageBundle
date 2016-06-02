@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="rz.news_page.provider.seo.default.class">Rz\NewsPageBundle\Provider\Post\DefaultSeoProvider</parameter>
+        <parameter key="rz.news_page.post.provider.default.class">Rz\NewsPageBundle\Provider\Post\DefaultProvider</parameter>
+    </parameters>
+
+    <services>
+        <service id="rz.news_page.provider.seo.default" class="%rz.news_page.provider.seo.default.class%" shared="true">
+            <tag name="rz.news_page.seo.provider" />
+            <argument>rz.news_page.provider.seo.default</argument>
+            <call method="setTranslator">
+                <argument type="service" id="translator" />
+            </call>
+        </service>
+
+        <service id="rz.news_page.post.provider.default" class="%rz.news_page.post.provider.default.class%" shared="true">
+            <tag name="rz.news.post.provider" />
+            <argument>rz.news_page.post.provider.default</argument>
+            <call method="setTranslator">
+                <argument type="service" id="translator" />
+            </call>
+        </service>
+    </services>
+</container>

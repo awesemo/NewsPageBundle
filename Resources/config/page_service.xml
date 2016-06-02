@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="rz.news_page.page.service.post.class">Rz\NewsPageBundle\Page\Service\PostPageService</parameter>
+        <parameter key="rz.news_page.page.service.post.name">Post</parameter>
+        <parameter key="rz.news_page.page.service.post_canonical.class">Rz\NewsPageBundle\Page\Service\PostCanonicalPageService</parameter>
+        <parameter key="rz.news_page.page.service.post_canonical.name">Post Canonical</parameter>
+    </parameters>
+
+    <services>
+        <service id="rz.news_page.page.service.post" class="%rz.news_page.page.service.post.class%">
+            <tag name="sonata.page"/>
+            <argument>%rz.news_page.page.service.post.name%</argument>
+            <argument type="service" id="sonata.page.template_manager" />
+            <argument type="service" id="sonata.seo.page" />
+            <argument type="service" id="sonata.page.router" />
+        </service>
+        <service id="rz.news_page.page.service.post_canonical" class="%rz.news_page.page.service.post_canonical.class%">
+            <tag name="sonata.page"/>
+            <argument>%rz.news_page.page.service.post_canonical.name%</argument>
+            <argument type="service" id="sonata.page.template_manager" />
+            <argument type="service" id="sonata.seo.page" />
+        </service>
+    </services>
+</container>

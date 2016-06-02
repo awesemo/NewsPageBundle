@@ -1,0 +1,44 @@
+{% extends 'RzNewsBundle:PostHasCategory:list.html.twig' %}
+
+{% block preview %}
+	{% if not app.request.get('hide_context') %}
+	<ul class="nav nav-pills rz-nav-pills-list">
+		{% for category in categories %}
+			{% if current_category and category.id == current_category.id %}
+				<li class="active"><a class="text-uppercase" href="{{ admin.generateUrl('list', {'site': currentSite.id, 'category': category.id }) }}">{{ category.name }}</a></li>
+			{% else %}
+				<li><a class="text-uppercase" href="{{ admin.generateUrl('list', {'site': currentSite.id, 'category': category.id }) }}">{{ category.name }}</a></li>
+			{% endif %}
+		{% endfor %}
+	</ul>
+	{% endif %}
+{% endblock %}
+
+{% block table_container_attr %}{% endblock table_container_attr %}
+
+{% block list_header %}
+	<div class="box-header with-border">
+		<h3 class="box-title">
+			<i class="fa fa-fw fa-globe fa-lg"></i>
+			<div class="btn-group">
+				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+					<strong class="text-info">{{ currentSite.name }}</strong> <span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" role="menu">
+					{% for site in sites %}
+						<li>
+							<a href="{% if current_category %}{{ admin.generateUrl('list', { 'site': site.id, 'category': current_category.id }) }}{% else %}{{ admin.generateUrl('list', { 'site': site.id }) }}{% endif %}">
+								{% if currentSite and site.id == currentSite.id %}
+									<span class="pull-right">
+	                                    <i class="fa fa-check"></i>
+	                                </span>
+								{% endif %}
+								{{ site.name }}
+							</a>
+						</li>
+					{% endfor%}
+				</ul>
+			</div>
+		</h3>
+	</div>
+{% endblock %}
