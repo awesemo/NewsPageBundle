@@ -1,0 +1,2 @@
+# NewsPageBundle
+Extension of SonataNewsBundle
