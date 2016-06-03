@@ -8,7 +8,8 @@ use Sonata\PageBundle\Model\SnapshotPageProxy;
 use Symfony\Component\HttpFoundation\Response;
 use Sonata\CoreBundle\Model\BaseEntityManager;
 use Sonata\NewsBundle\Model\PostInterface;
-use Sonata\ClassificationBundle\Model\CategoryInterface;
+use Sonata\CoreBundle\Model\ManagerInterface;
+
 
 /**
  * PageExtension.
@@ -21,6 +22,8 @@ class NewsPageExtension extends \Twig_Extension implements \Twig_Extension_InitR
      * @var CmsManagerSelectorInterface
      */
     private $postHasPageManager;
+
+    private $categoryHasPageManager;
 
     /**
      * @var array
@@ -42,8 +45,9 @@ class NewsPageExtension extends \Twig_Extension implements \Twig_Extension_InitR
      *
      * @param BaseEntityManager $postHasPageManager
      */
-    public function __construct(BaseEntityManager $postHasPageManager) {
+    public function __construct(ManagerInterface $postHasPageManager, ManagerInterface$categoryHasPageManager) {
         $this->postHasPageManager  = $postHasPageManager;
+        $this->categoryHasPageManager = $categoryHasPageManager;
     }
 
     /**
@@ -52,8 +56,9 @@ class NewsPageExtension extends \Twig_Extension implements \Twig_Extension_InitR
     public function getFunctions()
     {
         return array(
-            new \Twig_SimpleFunction('rz_news_page_canonical', array($this, 'pageCanonical')),
-            new \Twig_SimpleFunction('rz_news_page_by_category', array($this, 'pageByCategory')),
+            new \Twig_SimpleFunction('rz_news_page_page_by_post', array($this, 'pageByPost')),
+            new \Twig_SimpleFunction('rz_news_page_page_by_category', array($this, 'pageByCategory')),
+            new \Twig_SimpleFunction('rz_news_page_page_by_category_post', array($this, 'pageByCategoryAndPost')),
         );
     }
 
@@ -82,9 +87,9 @@ class NewsPageExtension extends \Twig_Extension implements \Twig_Extension_InitR
      *
      * @return string
      */
-    public function pageCanonical(PostInterface $post, $isCanonical = true)
+    public function pageByPost($post)
     {
-        $postHasPage = $this->postHasPageManager->findOneByPageAndIsCanonical(array('post'=>$post, 'is_canonical'=>$isCanonical));
+        $postHasPage = $this->postHasPageManager->findOneByPostAndIsCanonical(array('post'=>$post, 'is_canonical'=>true));
         return $postHasPage->getPage();
     }
 
@@ -94,12 +99,21 @@ class NewsPageExtension extends \Twig_Extension implements \Twig_Extension_InitR
      *
      * @return string
      */
-    private function pageByCategory($template, array $parameters = array())
+    public function pageByCategoryAndPost($category, $post)
     {
-        if (!isset($this->resources[$template])) {
-            $this->resources[$template] = $this->environment->loadTemplate($template);
-        }
+        $postHasPage = $this->postHasPageManager->findOneByPostAndCategory(array('category'=>$category, 'post'=>$post, 'is_canonical'=>false));
+        return $postHasPage->getPage();
+    }
 
-        return $this->resources[$template]->render($parameters);
+    /**
+     * @param string $template
+     * @param array  $parameters
+     *
+     * @return string
+     */
+    public function pageByCategory($category)
+    {
+        $categoryHasPage = $this->categoryHasPageManager->findOneByCategory(array('category'=>$category));
+        return $categoryHasPage->getPage();
     }
 }

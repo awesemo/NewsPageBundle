@@ -39,7 +39,7 @@ class PostHasCategoryAdmin extends Admin
     {
         $listMapper
             ->add('post', null, array('associated_property' => 'title'))
-            ->add('position', null, array('footable'=>array('attr'=>array('data-breakpoints'=>array('xs', 'sm'))), 'editable' => true))
+            ->add('position', null, array('footable'=>array('attr'=>array('data-breakpoints'=>array('xs', 'sm')))))
             ->add('post.publicationDateStart', null, array('footable'=>array('attr'=>array('data-breakpoints'=>array('xs', 'sm')))))
         ;
     }

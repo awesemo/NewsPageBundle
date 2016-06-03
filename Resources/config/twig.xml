@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="rz.news_page.twig.extension" class="Rz\NewsPageBundle\Twig\Extension\NewsPageExtension" public="false">
+            <tag name="twig.extension" />
+            <argument type="service" id="rz.news_page.manager.post_has_page" />
+            <argument type="service" id="rz.category_page.manager.category_has_page" />
+        </service>
+
+    </services>
+</container>

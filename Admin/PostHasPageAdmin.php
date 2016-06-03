@@ -7,11 +7,18 @@ use Sonata\AdminBundle\Admin\Admin;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
+use Sonata\AdminBundle\Route\RouteCollection;
 
 class PostHasPageAdmin extends Admin
 {
 
     protected $parentAssociationMapping = 'post';
+
+    protected $datagridValues = array(
+        'isCanonical' => array(
+            'value' => true
+        )
+    );
 
     /**
      * @param \Sonata\AdminBundle\Form\FormMapper $formMapper
@@ -20,11 +27,11 @@ class PostHasPageAdmin extends Admin
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
-        if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
+
             $formMapper->add('page', 'sonata_type_model_list', array('btn_delete' => false, 'btn_add' => false), array(
                 'link_parameters' => array('context' => 'news', 'hide_context' => true, 'mode' => 'list'),
             ));
-        }
+
 
         $formMapper
             ->add('enabled', null, array('required' => false))
@@ -39,15 +46,16 @@ class PostHasPageAdmin extends Admin
     protected function configureListFields(ListMapper $listMapper)
     {
         $listMapper
-            ->add('page.url', null, array('footable'=>array('attr'=>array('data_toggle'=>true))))
-            ->add('enabled', null, array('footable'=>array('attr'=>array('data_hide'=>'phone,tablet')), 'editable' => true))
-            ->add('_action', 'actions', array(
-                'actions' => array(
-                    'Show' => array('template' => 'SonataAdminBundle:CRUD:list__action_show.html.twig'),
-                    'Edit' => array('template' => 'SonataAdminBundle:CRUD:list__action_edit.html.twig'),
-                    'Delete' => array('template' => 'SonataAdminBundle:CRUD:list__action_delete.html.twig')),
-                'footable'=>array('attr'=>array('data_hide'=>'phone,tablet')),
-            ))
+            ->add('page', null, array('associated_property' => 'url'))
+            ->add('post', null, array('associated_property' => 'title', 'footable'=>array('attr'=>array('data-breakpoints'=>array('all')))))
+            ->add('enabled', null, array('footable'=>array('attr'=>array('data-breakpoints'=>array('xs', 'sm'))), 'editable' => false))
+//            ->add('_action', 'actions', array(
+//                'actions' => array(
+//                    'Show' => array('template' => 'SonataAdminBundle:CRUD:list__action_show.html.twig'),
+//                    'Edit' => array('template' => 'SonataAdminBundle:CRUD:list__action_edit.html.twig'),
+//                    'Delete' => array('template' => 'SonataAdminBundle:CRUD:list__action_delete.html.twig')),
+//                'footable'=>array('attr'=>array('data_hide'=>'phone,tablet')),
+//            ))
         ;
     }
 
@@ -59,30 +67,15 @@ class PostHasPageAdmin extends Admin
         $filter
             ->add('post')
             ->add('page')
+            ->add('isCanonical', null, array('show_filter' => false,))
             ->add('enabled');
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getListModes()
+    protected function configureRoutes(RouteCollection $collection)
     {
-        return parent::getListMode();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setListMode($mode)
-    {
-        return parent::setListMode($mode);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getListMode()
-    {
-        return parent::getListMode();
+        $collection->clearExcept(array('list', 'edit', 'create', 'show'));
     }
 }

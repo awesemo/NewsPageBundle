@@ -15,52 +15,10 @@ use Sonata\ClassificationBundle\Model\CategoryInterface;
 use Sonata\PageBundle\Model\PageManagerInterface;
 use Sonata\PageBundle\Entity\BlockInteractor;
 use Sonata\PageBundle\Model\Page;
-use Rz\NewsPageBundle\Model\TransformerInterface;
+use Rz\NewsPageBundle\Model\AbstractTransformer;
 
-class Transformer implements TransformerInterface
+class Transformer extends AbstractTransformer
 {
-
-    protected $postManager;
-
-    protected $pageManager;
-
-    protected $blockManager;
-
-    protected $postHasPageManager;
-
-    protected $categoryManager;
-
-    protected $permalink;
-
-    protected $categoryPermalink;
-
-    protected $defaultNewsPageSlug;
-
-    protected $slugify;
-
-    protected $blockInteractor;
-
-    protected $postBlockService;
-
-    protected $pageServices;
-
-    public function __construct(PostManagerInterface $postManager,
-                                PageManagerInterface $pageManager,
-                                BlockManagerInterface $blockManager,
-                                CategoryManagerInterface $categoryManager,
-                                ManagerInterface $postHasPageManager,
-                                BlockInteractor  $blockInteractor,
-                                RegistryInterface $registry)
-    {
-        $this->postManager          = $postManager;
-        $this->pageManager          = $pageManager;
-        $this->blockManager         = $blockManager;
-        $this->categoryManager      = $categoryManager;
-        $this->postHasPageManager   = $postHasPageManager;
-        $this->registry             = $registry;
-        $this->blockInteractor      = $blockInteractor;
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -78,12 +36,14 @@ class Transformer implements TransformerInterface
         $emBlockManager = $this->getBlockManager()->getEntityManager();
         $emPostHasPageManager = $this->getPostHasPageManager()->getEntityManager();
         $emPageManager = $this->getPageManager()->getEntityManager();
+        $emCategoryHasPageManager = $this->getCategoryHasPageManager()->getEntityManager();
 
         //Begin Transaction
         $emPostManager->getConnection()->beginTransaction();
         $emBlockManager->getConnection()->beginTransaction();
         $emPostHasPageManager->getConnection()->beginTransaction();
         $emPageManager->getConnection()->beginTransaction();
+        $emCategoryHasPageManager->getConnection()->beginTransaction();
 
         try {
 
@@ -143,15 +103,16 @@ class Transformer implements TransformerInterface
             //Rollback Transaction
             $emPostManager->getConnection()->commit();
             $emBlockManager->getConnection()->commit();
+            $emCategoryHasPageManager->getConnection()->commit();
             $emPostHasPageManager->getConnection()->commit();
             $emPageManager->getConnection()->commit();
-
 
         } catch (\Exception $e) {
             //Rollback Transaction
             $emPostManager->getConnection()->rollback();
             $emBlockManager->getConnection()->rollback();
             $emPostHasPageManager->getConnection()->rollback();
+            $emCategoryHasPageManager->getConnection()->rollback();
             $emPageManager->getConnection()->rollback();
         }
     }
@@ -218,16 +179,6 @@ class Transformer implements TransformerInterface
         }
     }
 
-    protected function fetchRootCategories() {
-        $rootCategories = $this->categoryManager->getRootCategories(false);
-        $root = [];
-        foreach($rootCategories as $category) {
-            $root[] = $category->getId();
-        }
-
-        return $root;
-    }
-
     protected function createCategoryPage(CategoryInterface $category,
                                           CategoryInterface $currentCategory,
                                           PostInterface $post,
@@ -255,14 +206,60 @@ class Transformer implements TransformerInterface
                     $parentPageCategory = $this->pageManager->findOneBy(array('url'=>'/', 'site'=>$post->getSite()));
                 }
             }
-            $pageCategory = $this->createPage($post, $parentPageCategory, $newsCanonicalPage, $category->getName(), null, $this->getPageService('category'));
-            #TODO insert data to category_page
+            $pageCategory = $this->createPage($post, $parentPageCategory, $newsCanonicalPage, $category->getName(), null, $this->getPageService('category'), $this->getCategoryTemplate('page'));
+        }
+
+        ################################
+        #Create category post list block
+        ################################
+        if (interface_exists('Rz\CategoryPageBundle\Model\CategoryHasPageInterface')) {
+
+            $contentContainer = $pageCategory->getContainerByCode('content');
+            if(!$contentContainer) {
+                // create container block
+                $pageCategory->addBlocks($contentContainer = $this->getBlockInteractor()->createNewContainer(array(
+                    'enabled' => true,
+                    'page' => $pageCategory,
+                    'code' => 'content',
+                )));
+                $contentContainer->setName('The category post list content container');
+                $this->getBlockManager()->save($contentContainer);
+            }
+
+            $categoryPostBlocks = $pageCategory->getBlocksByType($this->getCategoryPostListService());
+
+            if(empty($categoryPostBlocks)) {
+                $contentContainer->addChildren($categoryPostBlock = $this->getBlockManager()->create());
+                $categoryPostBlock->setType($this->getCategoryPostListService());
+                $categoryPostBlock->setName(sprintf('%s - %s', 'Category Post List Block', $category->getName()));
+                $categoryPostBlock->setSetting('categoryId', $category->getId());
+                //TODO: REQUIRED PARAMS
+                $categoryPostBlock->setSetting('template', $this->getCategoryTemplate('block'));
+                $categoryPostBlock->setPage($pageCategory);
+                $this->getBlockManager()->save($categoryPostBlock);
+            } else {
+                foreach($categoryPostBlocks as $block) {
+                    $block->setParent($contentContainer);
+                    $this->getBlockManager()->save($block);
+                    $categoryPostBlock = $block;
+                    break;
+                }
+            }
+
+            //check if block is existing on Category Has Page
+            $categoryHasPage = $this->getCategoryHasPageManager()->findOneBy(array('category'=>$category, 'page'=>$pageCategory)) ?: null;
+            if(!$categoryHasPage) {
+                $categoryHasPage = $this->getCategoryHasPageManager()->create();
+                $categoryHasPage->setCategory($category);
+                $categoryHasPage->setPage($pageCategory);
+                $categoryHasPage->setBlock($categoryPostBlock);
+                $this->getCategoryHasPageManager()->save($categoryHasPage);
+            }
         }
 
         if($currentCategory->getId() === $category->getId()) {
             return $pageCategory;
         }
-
         return;
     }
 
@@ -301,7 +298,7 @@ class Transformer implements TransformerInterface
 
         if(!$postHasPage) {
             // create canonical page
-            $newsCanonicalPage = $this->createPage($post, $pageCanonicalDefaultCategory, null, $post->getTitle(), Page::slugify($post->getId().' '.$post->getTitle()), $this->getPageService('post_canonical'));
+            $newsCanonicalPage = $this->createPage($post, $pageCanonicalDefaultCategory, null, $post->getTitle(), Page::slugify($post->getId().' '.$post->getTitle()), $this->getPageService('post_canonical'), $post->getSetting('pageTemplateCode'));
 
             // create container block
             $newsCanonicalPage->addBlocks($contentContainer = $this->getBlockInteractor()->createNewContainer(array(
@@ -329,7 +326,7 @@ class Transformer implements TransformerInterface
         }
     }
 
-    protected function createPage($post, $parent, $newsCanonicalPage=null, $name='PAGE', $slug=null, $pageType=null) {
+    protected function createPage($post, $parent, $newsCanonicalPage=null, $name='PAGE', $slug=null, $pageType=null, $templateCode = null) {
         $page = $this->pageManager->findOneBy(array('name'=>$name, 'parent'=>$parent, 'site'=>$post->getSite()));
         if(!$page) {
             $page = $this->pageManager->create();
@@ -351,9 +348,7 @@ class Transformer implements TransformerInterface
                 $page->setSlug($slug);
             }
 
-            if ($post->getSetting('pageTemplateCode')) {
-                $page->setTemplateCode($post->getSetting('pageTemplateCode'));
-            }
+            $page->setTemplateCode($templateCode);
             $page = $this->pageManager->save($page);
         }
         return $page;
@@ -364,7 +359,7 @@ class Transformer implements TransformerInterface
         if(!$pageCanonicalDefaultCategory) {
             #TODO home URL should be in a parameter
             $parent = $this->pageManager->findOneBy(array('url'=>'/', 'site'=>$post->getSite()));
-            $pageCanonicalDefaultCategory = $this->createPage($post, $parent, null, $this->getDefaultNewsPageSlug(), null, $this->getPageService('category_canonical'));
+            $pageCanonicalDefaultCategory = $this->createPage($post, $parent, null, $this->getDefaultNewsPageSlug(), null, $this->getPageService('category_canonical'), $this->getCategoryTemplate('page'));
         }
         return $pageCanonicalDefaultCategory;
     }
@@ -382,6 +377,7 @@ class Transformer implements TransformerInterface
         $postBlock->setType($this->getPostBlockService());
         $postBlock->setName(sprintf('%s - %s', 'Post Block', $post->getTitle()));
         $postBlock->setSetting('postId', $post->getId());
+        $postBlock->setEnabled(true);
         $postBlock->setSetting('template', $post->getSetting('template'));
         $postBlock = $this->getBlockManager()->save($postBlock);
         return $postBlock;
@@ -393,7 +389,7 @@ class Transformer implements TransformerInterface
             $postHasPage = $this->getPostHasPageManager()->findOneByPageAndPageHasPost(array('post'=>$post, 'parent'=>$catPage['page'])) ?: null;
             if(!$postHasPage) {
                 // create category post page
-                $newsCategoryPage = $this->createPage($post, $catPage['page'], $canonicalPage, $post->getTitle(), null, $this->getPageService('post'));
+                $newsCategoryPage = $this->createPage($post, $catPage['page'], $canonicalPage, $post->getTitle(), null, $this->getPageService('post'), $post->getSetting('pageTemplateCode'));
                 // create container block
                 $newsCategoryPage->addBlocks($contentContainer = $this->getBlockInteractor()->createNewContainer(array(
                     'enabled' => true,
@@ -446,201 +442,5 @@ class Transformer implements TransformerInterface
                 $post->addPostHasPage($php);
             }
         }
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getPermalink()
-    {
-        return $this->permalink;
-    }
-
-    /**
-     * @param mixed $permalink
-     */
-    public function setPermalink($permalink)
-    {
-        $this->permalink = $permalink;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCategoryPermalink()
-    {
-        return $this->categoryPermalink;
-    }
-
-    /**
-     * @param mixed $categoryPermalink
-     */
-    public function setCategoryPermalink($categoryPermalink)
-    {
-        $this->categoryPermalink = $categoryPermalink;
-    }
-
-    /**
-     * @return PostHasPageInterface
-     */
-    public function getPostHasPageManager()
-    {
-        return $this->postHasPageManager;
-    }
-
-    /**
-     * @param PostHasPageInterface $postHasPageManager
-     */
-    public function setPostHasPageManager($postHasPageManager)
-    {
-        $this->postHasPageManager = $postHasPageManager;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCategoryManager()
-    {
-        return $this->categoryManager;
-    }
-
-    /**
-     * @param mixed $categoryManager
-     */
-    public function setCategoryManager($categoryManager)
-    {
-        $this->categoryManager = $categoryManager;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getDefaultNewsPageSlug()
-    {
-        return $this->defaultNewsPageSlug;
-    }
-
-    /**
-     * @param mixed $defaultNewsPageSlug
-     */
-    public function setDefaultNewsPageSlug($defaultNewsPageSlug)
-    {
-        $this->defaultNewsPageSlug = $this->getSlugify()->slugify($defaultNewsPageSlug);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getSlugify()
-    {
-        return $this->slugify;
-    }
-
-    /**
-     * @param mixed $slugify
-     */
-    public function setSlugify($slugify)
-    {
-        $this->slugify = $slugify;
-    }
-
-    /**
-     * @return BlockManagerInterface
-     */
-    public function getBlockManager()
-    {
-        return $this->blockManager;
-    }
-
-    /**
-     * @param BlockManagerInterface $blockManager
-     */
-    public function setBlockManager($blockManager)
-    {
-        $this->blockManager = $blockManager;
-    }
-
-    /**
-     * @return PostManagerInterface
-     */
-    public function getPostManager()
-    {
-        return $this->postManager;
-    }
-
-    /**
-     * @param PostManagerInterface $postManager
-     */
-    public function setPostManager($postManager)
-    {
-        $this->postManager = $postManager;
-    }
-
-    /**
-     * @return PageManagerInterface
-     */
-    public function getPageManager()
-    {
-        return $this->pageManager;
-    }
-
-    /**
-     * @param PageManagerInterface $pageManager
-     */
-    public function setPageManager($pageManager)
-    {
-        $this->pageManager = $pageManager;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getBlockInteractor()
-    {
-        return $this->blockInteractor;
-    }
-
-    /**
-     * @param mixed $blockInteractor
-     */
-    public function setBlockInteractor(BlockInteractor $blockInteractor)
-    {
-        $this->blockInteractor = $blockInteractor;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getPostBlockService()
-    {
-        return $this->postBlockService;
-    }
-
-    /**
-     * @param mixed $postBlockService
-     */
-    public function setPostBlockService($postBlockService)
-    {
-        $this->postBlockService = $postBlockService;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getPageServices()
-    {
-        return $this->pageServices;
-    }
-
-    /**
-     * @param mixed $pageServices
-     */
-    public function setPageServices($pageServices)
-    {
-        $this->pageServices = $pageServices;
-    }
-
-    public function getPageService($name, $default= null) {
-        return isset($this->pageServices[$name]) ? $this->pageServices[$name] : $default;
     }
 }

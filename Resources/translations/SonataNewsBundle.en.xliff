@@ -349,6 +349,30 @@
                 <source>show.label_publication_date_end</source>
                 <target>Publication end date</target>
             </trans-unit>
+            <trans-unit id="rz.news_page.block.service.post">
+                <source>rz.news_page.block.service.post</source>
+                <target>Post Block</target>
+            </trans-unit>
+            <trans-unit id="rz.news_page.block.service.post_list_by_category">
+                <source>rz.news_page.block.service.post_list_by_category</source>
+                <target>Post List By Category</target>
+            </trans-unit>
+            <trans-unit id="label_post_has_page">
+                <source>label_post_has_page</source>
+                <target>Pages | Post</target>
+            </trans-unit>
+            <trans-unit id="list.label_page">
+                <source>list.label_page</source>
+                <target>Page</target>
+            </trans-unit>
+						<trans-unit id="filter.label_page">
+                <source>filter.label_page</source>
+                <target>Page</target>
+            </trans-unit>
+						<trans-unit id="breadcrumb.link_post_has_page_list">
+                <source>breadcrumb.link_post_has_page_list</source>
+                <target>Pages | Post</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

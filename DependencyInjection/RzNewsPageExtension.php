@@ -26,6 +26,7 @@ class RzNewsPageExtension extends Extension
         $loader->load('orm.xml');
         $loader->load('admin.xml');
         $loader->load('block.xml');
+        $loader->load('twig.xml');
         $this->configureManagerClass($config, $container);
         $this->configureClass($config, $container);
         $this->configureAdminClass($config, $container);
@@ -117,11 +118,11 @@ class RzNewsPageExtension extends Extension
         $container->setParameter('rz.news_page.transformer.class',  $config['page']['transformer']['class']);
 
         # Page Service
-        $container->setParameter('rz.news_page.page.service.post.class',                $config['page']['services']['post']['settings']['class']);
-        $container->setParameter('rz.news_page.page.service.post_canonical.class',      $config['page']['services']['post_canonical']['settings']['class']);
+        $container->setParameter('rz.news_page.page.service.post.class',                $config['page_service']['post']['class']);
+        $container->setParameter('rz.news_page.page.service.post_canonical.class',      $config['page_service']['post_canonical']['class']);
 
-        $container->setParameter('rz.news_page.page.service.post.name',                 $config['page']['services']['post']['settings']['name']);
-        $container->setParameter('rz.news_page.page.service.post_canonical.name',       $config['page']['services']['post_canonical']['settings']['name']);
+        $container->setParameter('rz.news_page.page.service.post.name',                 $config['page_service']['post']['name']);
+        $container->setParameter('rz.news_page.page.service.post_canonical.name',       $config['page_service']['post_canonical']['name']);
 
         $pageService = [];
         $pageService['post'] = $config['page']['services']['post']['service'];

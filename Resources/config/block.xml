@@ -5,17 +5,42 @@
 
     <parameters>
         <parameter key="rz.news_page.block.service.post.class">Rz\NewsPageBundle\Block\PostBlockService</parameter>
+        <parameter key="rz.news_page.block.service.post_list_by_category.class">Rz\NewsPageBundle\Block\PostListByCategoryBlockService</parameter>
     </parameters>
 
     <services>
         <service id="rz.news_page.block.service.post" class="%rz.news_page.block.service.post.class%">
             <tag name="sonata.block" />
-            <argument>rz.news.news_page.default.post</argument>
+            <argument>rz.news_page.block.service.post</argument>
             <argument type="service" id="templating" />
-            <argument type="service" id="sonata.news.manager.post" />
-            <argument type="service" id="sonata.news.admin.post" />
             <argument type="service" id="sonata.page.site.selector" />
             <argument type="service" id="sonata.page.cms_manager_selector" />
+
+            <call method="setPostAdmin">
+                <argument type="service" id="sonata.news.admin.post" />
+            </call>
+
+            <call method="setPostManager">
+                <argument type="service" id="sonata.news.manager.post" />
+            </call>
+        </service>
+
+        <service id="rz.news_page.block.service.post_list_by_category" class="%rz.news_page.block.service.post_list_by_category.class%">
+            <tag name="sonata.block" />
+            <argument>rz.news_page.block.service.post_list_by_category</argument>
+            <argument type="service" id="templating" />
+            <argument type="service" id="sonata.page.site.selector" />
+            <argument type="service" id="sonata.page.cms_manager_selector" />
+
+            <call method="setCategoryAdmin">
+                <argument type="service" id="sonata.classification.admin.category" />
+            </call>
+            <call method="setCategoryManager">
+                <argument type="service" id="sonata.classification.manager.category" />
+            </call>
+            <call method="setPostHasPageManager">
+                <argument type="service" id="rz.news_page.manager.post_has_page" />
+            </call>
         </service>
     </services>
 </container>

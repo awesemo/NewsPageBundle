@@ -59,11 +59,19 @@ class NewsPageCompilerPass implements CompilerPassInterface
         $serviceId = $container->getParameter('rz.news_page.slugify_service');
         $transformer->addMethodCall('setSlugify', array(new Reference($serviceId)));
         #set default values
-        $transformer->addMethodCall('setPermalink', array(new Reference('rz.news_page.permalink.default')));
-        //$transformer->addMethodCall('setCategoryPermalink', array(new Reference('rz.news.permalink.category')));
         $transformer->addMethodCall('setDefaultNewsPageSlug', array($container->getParameter('rz.news_page.parent_slug')));
         $transformer->addMethodCall('setPostBlockService', array($container->getParameter('rz.news_page.post_block_service')));
-        $transformer->addMethodCall('setPageServices', array($container->getParameter('rz.news_page.page.services')));
+        $pageServices = array_merge($container->getParameter('rz.news_page.page.services'), $container->getParameter('rz.category_page.page.services'));
+        $transformer->addMethodCall('setPageServices', array($pageServices));
+
+        if (interface_exists('Rz\CategoryPageBundle\Model\CategoryHasPageInterface')) {
+            $transformer->addMethodCall('setCategoryPostListService', array($container->getParameter('rz.category_page.block.catgory_post_list.service')));
+            $transformer->addMethodCall('setCategoryHasPageManager', array(new Reference('rz.category_page.manager.category_has_page')));
+            $categoryTemplates = [];
+            $categoryTemplates['page'] = $container->getParameter('rz.category_page.page.template.default');
+            $categoryTemplates['block'] = $container->getParameter('rz.category_page.block.template.catgory_post_list.default')['template'];
+            $transformer->addMethodCall('setCategoryTemplates', array($categoryTemplates));
+        }
 
         ########################################
         ## Inject Transformer to PostAdmin

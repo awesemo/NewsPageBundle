@@ -15,17 +15,17 @@ use Sonata\BlockBundle\Block\BlockContextInterface;
 use Sonata\BlockBundle\Model\BlockInterface;
 use Sonata\CoreBundle\Model\ManagerInterface;
 use Sonata\CoreBundle\Model\Metadata;
-use Sonata\NewsBundle\Admin\PostAdmin;
-use Sonata\NewsBundle\Model\PostInterface;
 use Sonata\PageBundle\CmsManager\CmsManagerSelectorInterface;
 use Sonata\PageBundle\Site\SiteSelectorInterface;
+use Sonata\ClassificationBundle\Admin\CategoryAdmin;
+use Sonata\ClassificationBundle\Model\CategoryInterface;
 
 /**
  * PageExtension.
  *
  * @author     Thomas Rabaix <thomas.rabaix@sonata-project.org>
  */
-class PostBlockService extends BaseBlockService
+class PostListByCategoryBlockService extends BaseBlockService
 {
 
     /**
@@ -38,12 +38,14 @@ class PostBlockService extends BaseBlockService
      */
     protected $cmsManagerSelector;
 
-    protected $postAdmin;
+    protected $categoryAdmin;
 
     /**
      * @var ManagerInterface
      */
-    protected $postManager;
+    protected $categoryManager;
+
+    protected $postHasPageManager;
 
     /**
      * @param string             $name
@@ -64,35 +66,50 @@ class PostBlockService extends BaseBlockService
     /**
      * @return AdminInterface
      */
-    public function getPostAdmin()
+    public function getCategoryAdmin()
     {
-        return $this->postAdmin;
+        return $this->categoryAdmin;
     }
 
     /**
-     * @param AdminInterface $postAdmin
+     * @param AdminInterface $categoryAdmin
      */
-    public function setPostAdmin($postAdmin)
+    public function setCategoryAdmin($categoryAdmin)
     {
-        $this->postAdmin = $postAdmin;
+        $this->categoryAdmin = $categoryAdmin;
     }
 
     /**
      * @return ManagerInterface
      */
-    public function getPostManager()
+    public function getCategoryManager()
     {
-        return $this->postManager;
+        return $this->categoryManager;
     }
 
     /**
-     * @param ManagerInterface $postManager
+     * @param ManagerInterface $categoryManager
      */
-    public function setPostManager($postManager)
+    public function setCategoryManager($categoryManager)
     {
-        $this->postManager = $postManager;
+        $this->categoryManager = $categoryManager;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getPostHasPageManager()
+    {
+        return $this->postHasPageManager;
+    }
+
+    /**
+     * @param mixed $postHasPageManager
+     */
+    public function setPostHasPageManager($postHasPageManager)
+    {
+        $this->postHasPageManager = $postHasPageManager;
+    }
 
     /**
      * {@inheritdoc}
@@ -100,8 +117,8 @@ class PostBlockService extends BaseBlockService
     public function configureSettings(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'postId'      => null,
-            'template'    => 'RzNewsPageBundle:Block:block_post_default.html.twig',
+            'categoryId'  => null,
+            'template'    => 'RzCategoryPageBundle:Block:block_category_post_list.html.twig',
         ));
     }
 
@@ -111,14 +128,14 @@ class PostBlockService extends BaseBlockService
     public function buildEditForm(FormMapper $formMapper, BlockInterface $block)
     {
 
-        if (!$block->getSetting('postId') instanceof PostInterface) {
+        if (!$block->getSetting('categoryId') instanceof CategoryInterface) {
             $this->load($block);
         }
 
         $formMapper
             ->add('settings', 'sonata_type_immutable_array', array(
                 'keys' => array(
-                    array($this->getPostBuilder($formMapper), null, array()),
+                    array($this->getCategoryBuilder($formMapper), null, array()),
                 ),
                 'translation_domain' => 'SonataNewsBundle',
                 'attr'=>array('class'=>'rz-immutable-container')
@@ -130,25 +147,25 @@ class PostBlockService extends BaseBlockService
      *
      * @return FormBuilder
      */
-    protected function getPostBuilder(FormMapper $formMapper)
+    protected function getCategoryBuilder(FormMapper $formMapper)
     {
         // simulate an association ...
-        $fieldDescription = $this->getPostAdmin()->getModelManager()->getNewFieldDescriptionInstance($this->postAdmin->getClass(), 'post', array(
-            'translation_domain' => 'SonataNewsBundle',
+        $fieldDescription = $this->getCategoryAdmin()->getModelManager()->getNewFieldDescriptionInstance($this->categoryAdmin->getClass(), 'category', array(
+            'translation_domain' => 'SonataClassificationBundle',
         ));
-        $fieldDescription->setAssociationAdmin($this->getPostAdmin());
+        $fieldDescription->setAssociationAdmin($this->getCategoryAdmin());
         $fieldDescription->setAdmin($formMapper->getAdmin());
         $fieldDescription->setOption('edit', 'list');
         $fieldDescription->setAssociationMapping(array(
-            'fieldName' => 'postId',
+            'fieldName' => 'categoryId',
             'type'      => ClassMetadataInfo::MANY_TO_ONE,
         ));
 
-        return $formMapper->create('postId', 'sonata_type_model_list', array(
+        return $formMapper->create('categoryId', 'sonata_type_model_list', array(
             'sonata_field_description' => $fieldDescription,
-            'class'                    => $this->getPostAdmin()->getClass(),
-            'model_manager'            => $this->getPostAdmin()->getModelManager(),
-            'label'                    => 'form.label_post',
+            'class'                    => $this->getCategoryAdmin()->getClass(),
+            'model_manager'            => $this->getCategoryAdmin()->getModelManager(),
+            'label'                    => 'form.label_name',
         ));
     }
 
@@ -167,13 +184,13 @@ class PostBlockService extends BaseBlockService
      */
     public function load(BlockInterface $block)
     {
-        $post = $block->getSetting('postId', null);
+        $category = $block->getSetting('categoryId', null);
 
-        if (is_int($post)) {
-            $post = $this->postManager->findOneBy(array('id' => $post));
+        if (is_int($category)) {
+            $category = $this->categoryManager->findOneBy(array('id' => $category));
         }
 
-        $block->setSetting('postId', $post);
+        $block->setSetting('categoryId', $category);
     }
 
     /**
@@ -181,7 +198,7 @@ class PostBlockService extends BaseBlockService
      */
     public function prePersist(BlockInterface $block)
     {
-        $block->setSetting('postId', is_object($block->getSetting('postId')) ? $block->getSetting('postId')->getId() : null);
+        $block->setSetting('categoryId', is_object($block->getSetting('categoryId')) ? $block->getSetting('categoryId')->getId() : null);
     }
 
     /**
@@ -189,7 +206,7 @@ class PostBlockService extends BaseBlockService
      */
     public function preUpdate(BlockInterface $block)
     {
-        $block->setSetting('postId', is_object($block->getSetting('postId')) ? $block->getSetting('postId')->getId() : null);
+        $block->setSetting('categoryId', is_object($block->getSetting('categoryId')) ? $block->getSetting('categoryId')->getId() : null);
     }
 
     /**
@@ -199,10 +216,16 @@ class PostBlockService extends BaseBlockService
     {
         $cmsManager = $this->cmsManagerSelector->retrieve();
         $page = $cmsManager->getCurrentPage();
+
+        $category = $blockContext->getBlock()->getSetting('categoryId');
+
+        $pager = $this->getPostHasPageManager()->getPostsByCategoryPager(array('category'=>$category), 1);
+
         return $this->renderResponse($blockContext->getTemplate(), array(
             'block_context'  => $blockContext,
             'block'          => $blockContext->getBlock(),
             'page'           => $page,
+            'pager'          => $pager
         ), $response);
     }
 }

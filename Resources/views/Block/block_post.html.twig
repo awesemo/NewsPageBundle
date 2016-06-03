@@ -16,7 +16,10 @@
 					<a href="#">{{ tag.name }}</a>{% if not loop.last %},{% endif %}
 				{% endfor %}
 				<hr>
-				<p><a href="{% if page.parent %}{{ path(page.parent) }}{% else %}#{% endif %}"># Back</a></p>
+				{% if post.postHasCategory | length > 0 %}
+					{% set phc = post.postHasCategory[0] %}
+					<p><a href="{{ path(rz_news_page_page_by_category(phc.category)) }}"># Back</a></p>
+				{% endif %}
 			</div>
 		</div><!-- /row -->
 	</div> <!-- /container -->
