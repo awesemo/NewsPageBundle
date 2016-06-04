@@ -92,12 +92,7 @@ class PostAdmin extends Admin
                     'class' => 'col-md-8',
                 ))
                 ->add('title')
-                ->add('image', 'sonata_type_model_list', array('required' => false), array(
-                    'link_parameters' => array(
-                        'context'      => $this->getDefaultContext(),
-                        'hide_context' => true,
-                    ),
-                ))
+                ->add('image', 'sonata_type_model_list', array('required' => false), array('link_parameters' => $this->getMediaSettings()))
                 ->add('abstract', null, array('attr' => array('rows' => 5)))
                 ->end()
                 ->with('group_status', array('class' => 'col-md-4',))
@@ -121,7 +116,7 @@ class PostAdmin extends Admin
                 ->end()
             ->end();
 
-         ##############################
+        ##############################
         # TAGS
         ##############################
 
@@ -133,16 +128,15 @@ class PostAdmin extends Admin
                         'multiple' => 'true',
                         'required' => false,
                         'expanded' => true,
-                        'query'    => $this->getTagManager()->geTagQueryForDatagrid(array($this->getDefaultContext()))),
-                        array('link_parameters' => array(
-                              'context'      => $this->getDefaultContext(),
-                              'hide_context' => true)))
+                        'query'    => $this->getTagManager()->geTagQueryForDatagrid(array($this->getTagsSettingsForQuery()))),
+                        array('link_parameters' => $this->getTagsSettings()))
                 ->end()
             ->end();
 
         ##############################
         # CATEGORY
         ##############################
+
 
         $formMapper
             ->tab('tab.rz_news_category')
@@ -154,7 +148,7 @@ class PostAdmin extends Admin
                                 'edit'              => 'inline',
                                 'inline'            => 'table',
                                 'sortable'          => 'position',
-                                'link_parameters'   => array('context' => $this->getDefaultContext()),
+                                'link_parameters'   => $this->getPostHasCagegorySettings(),
                                 'admin_code'        => 'rz.news.admin.post_has_category',
                             ))
                 ->end()
