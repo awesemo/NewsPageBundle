@@ -153,7 +153,7 @@ class DefaultSeoProvider extends BaseProvider
      */
     public function postPersist(PostInterface $post)
     {
-        $post->setSetting('ogImage', is_object($post->getSetting('ogImage')) ? $post->getSetting('ogImage')->getId() : null);
+        $post->setSeoSetting('ogImage', is_object($post->getSeoSetting('ogImage')) ? $post->getSeoSetting('ogImage')->getId() : null);
         parent::postPersist($post);
     }
 
@@ -162,7 +162,7 @@ class DefaultSeoProvider extends BaseProvider
      */
     public function postUpdate(PostInterface $post)
     {
-        $post->setSetting('ogImage', is_object($post->getSetting('ogImage')) ? $post->getSetting('ogImage')->getId() : null);
+        $post->setSeoSetting('ogImage', is_object($post->getSeoSetting('ogImage')) ? $post->getSeoSetting('ogImage')->getId() : null);
         parent::postUpdate($post);
     }
 

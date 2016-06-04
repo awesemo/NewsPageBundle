@@ -265,13 +265,12 @@ class PostAdmin extends Admin
         }
 
         //SEO PROVIDER
-        $seoProvider = $this->getSeoProvider();
-        if($seoProvider && interface_exists('Sonata\PageBundle\Model\PageInterface')) {
+        if($this->hasSeoProvider() && interface_exists('Sonata\PageBundle\Model\PageInterface')) {
             if ($instance && $instance->getId()) {
-                $seoProvider->load($instance);
-                $seoProvider->buildEditForm($formMapper, $instance);
+                $this->seoProvider->load($instance);
+                $this->seoProvider->buildEditForm($formMapper, $instance);
             } else {
-                $seoProvider->buildCreateForm($formMapper, $instance);
+                $this->seoProvider->buildCreateForm($formMapper, $instance);
             }
         }
     }
@@ -416,6 +415,21 @@ class PostAdmin extends Admin
         if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
             $object->setPostHasPage($object->getPostHasPage());
             $this->getTransformer()->create($object);
+        }
+
+        if($this->hasSeoProvider() && interface_exists('Sonata\PageBundle\Model\PageInterface')) {
+            $this->getSeoProvider()->postPersist($object);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function postUpdate($object)
+    {
+        parent::postUpdate($object);
+        if($this->hasSeoProvider() && interface_exists('Sonata\PageBundle\Model\PageInterface')) {
+            $this->getSeoProvider()->postUpdate($object);
         }
     }
 
