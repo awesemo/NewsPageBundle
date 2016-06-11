@@ -5,6 +5,7 @@ namespace Rz\NewsPageBundle\Entity;
 use Sonata\CoreBundle\Model\BaseEntityManager;
 use Sonata\DatagridBundle\Pager\Doctrine\Pager;
 use Sonata\DatagridBundle\ProxyQuery\Doctrine\ProxyQuery;
+use Doctrine\Common\CommonException;
 
 class PostHasPageManager extends BaseEntityManager
 {
@@ -21,8 +22,6 @@ class PostHasPageManager extends BaseEntityManager
         $query = $this->getRepository()
             ->createQueryBuilder('php')
             ->select('php');
-
-        $fields = $this->getEntityManager()->getClassMetadata($this->class)->getFieldNames();
 
         $parameters = array();
 
@@ -47,8 +46,6 @@ class PostHasPageManager extends BaseEntityManager
         $query = $this->getRepository()
             ->createQueryBuilder('php')
             ->select('php');
-
-        $fields = $this->getEntityManager()->getClassMetadata($this->class)->getFieldNames();
 
         $parameters = array();
 
@@ -79,8 +76,6 @@ class PostHasPageManager extends BaseEntityManager
             ->createQueryBuilder('php')
             ->select('php');
 
-        $fields = $this->getEntityManager()->getClassMetadata($this->class)->getFieldNames();
-
         $parameters = array();
 
         if (isset($criteria['post'])) {
@@ -109,8 +104,6 @@ class PostHasPageManager extends BaseEntityManager
         $query = $this->getRepository()
             ->createQueryBuilder('php')
             ->select('php');
-
-        $fields = $this->getEntityManager()->getClassMetadata($this->class)->getFieldNames();
 
         $parameters = array();
 
@@ -147,6 +140,19 @@ class PostHasPageManager extends BaseEntityManager
            ->where('php.post = :post')
            ->andWhere($qb->expr()->in('php.id', $postHasCategories))
            ->setParameter('post', $post);
+
+        return $qb->getQuery()->execute();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function cleanupOrphanData()
+    {
+        $qb = $this->getRepository()->createQueryBuilder('php');
+        $qb->delete()
+            ->where($qb->expr()->isNull('php.page'))
+            ->andWhere($qb->expr()->isNull('php.sharedBlock'));
 
         return $qb->getQuery()->execute();
     }
@@ -219,5 +225,60 @@ class PostHasPageManager extends BaseEntityManager
         $pager->init();
 
         return $pager;
+    }
+
+    public function fetchNewsPages($criteria = [])
+    {
+        $qb = $this->getRepository()->createQueryBuilder('php');
+        $qb->select('php')
+           ->join('php.page', 'p');
+
+        $parameters = array();
+
+        # get all news pages only
+        $qb->where($qb->expr()->isNull('php.category'));
+        $qb->andWhere('php.isCanonical = :isCanonical');
+        $parameters['isCanonical'] = true;
+
+        if (isset($criteria['site'])) {
+            $qb->andWhere('p.site = :site');
+            $parameters['site'] = $criteria['site'];
+        }
+
+        $qb->setParameters($parameters);
+
+        return $qb->getQuery()->useResultCache(true, 3600)->execute();
+    }
+
+    public function findOneByPage($criteria = []) {
+
+        $qb = $this->getRepository()->createQueryBuilder('php');
+        $qb->select('php')->join('php.page', 'p');
+        $parameters = array();
+
+        $qb->where($qb->expr()->isNull('php.category'));
+        $qb->andWhere('php.isCanonical = :isCanonical');
+        $parameters['isCanonical'] = true;
+
+        if (isset($criteria['site'])) {
+            $qb->andWhere('p.site = :site');
+            $parameters['site'] = $criteria['site'];
+        }
+
+        if (isset($criteria['page'])) {
+            $qb->andWhere('php.page = :page');
+            $parameters['page'] = $criteria['page'];
+        } else {
+            throw new CommonException('Paremeter post is required found null.');
+        }
+
+        $qb->setParameters($parameters)->setMaxResults(1);
+
+        try {
+            return $qb->getQuery()->useResultCache(true, 3600)->getSingleResult();
+        }
+        catch(\Doctrine\ORM\NoResultException $e) {
+            return;
+        }
     }
 }

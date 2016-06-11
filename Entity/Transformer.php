@@ -32,17 +32,15 @@ class Transformer extends AbstractTransformer
      */
     public function update(PostInterface &$post)
     {
-        $emPostManager = $this->getPageManager()->getEntityManager();
+        $emPageManager = $this->getPageManager()->getEntityManager();
         $emBlockManager = $this->getBlockManager()->getEntityManager();
         $emPostHasPageManager = $this->getPostHasPageManager()->getEntityManager();
-        $emPageManager = $this->getPageManager()->getEntityManager();
         $emCategoryHasPageManager = $this->getCategoryHasPageManager()->getEntityManager();
 
         //Begin Transaction
-        $emPostManager->getConnection()->beginTransaction();
+        $emPageManager->getConnection()->beginTransaction();
         $emBlockManager->getConnection()->beginTransaction();
         $emPostHasPageManager->getConnection()->beginTransaction();
-        $emPageManager->getConnection()->beginTransaction();
         $emCategoryHasPageManager->getConnection()->beginTransaction();
 
         try {
@@ -101,55 +99,51 @@ class Transformer extends AbstractTransformer
             $this->updatePages($post);
 
             //Rollback Transaction
-            $emPostManager->getConnection()->commit();
+            $emPageManager->getConnection()->commit();
             $emBlockManager->getConnection()->commit();
             $emCategoryHasPageManager->getConnection()->commit();
             $emPostHasPageManager->getConnection()->commit();
-            $emPageManager->getConnection()->commit();
 
         } catch (\Exception $e) {
             //Rollback Transaction
-            $emPostManager->getConnection()->rollback();
+            $emPageManager->getConnection()->rollback();
             $emBlockManager->getConnection()->rollback();
             $emPostHasPageManager->getConnection()->rollback();
             $emCategoryHasPageManager->getConnection()->rollback();
-            $emPageManager->getConnection()->rollback();
         }
     }
 
     protected function updatePages($post) {
-
-        $em = $this->getPostManager()->getEntityManager();
-        $uow = $em->getUnitOfWork();
-        $uow->computeChangeSets();
-        $changeset = $uow->getEntityChangeSet($post);
-
-        //TODO: OPTIMIZE
-        if(count($changeset)) {
-            // Update category pages
-            $postHasPage = $this->postHasPageManager->fetchCategoryPages($post);
-            if(count($postHasPage)>0) {
-                //update each page to trigger fix URL
-                foreach($postHasPage as $php) {
-                    $page = $php->getPage();
+        $postHasPage = $this->postHasPageManager->fetchCategoryPages($post);
+        if(count($postHasPage)>0) {
+            //update each page to trigger fix URL
+            foreach($postHasPage as $php) {
+                $page = $php->getPage();
+                if($page && ($post->getTitle() != $page->getName())) {
                     $page->setName($post->getTitle());
                     $page->setSlug(Page::slugify($post->getTitle()));
                     $page->setEdited(true);
                     $this->pageManager->save($page);
                 }
             }
-            //update canonical page
-            $postHasPageCanonical = $this->postHasPageManager->fetchCanonicalPage($post);
-            if($postHasPageCanonical) {
-                $page = $postHasPageCanonical->getPage();
+        }
+        //update canonical page
+        $postHasPageCanonical = $this->postHasPageManager->fetchCanonicalPage($post);
+        if($postHasPageCanonical) {
+            $page = $postHasPageCanonical->getPage();
+            if($page && ($post->getTitle() != $page->getName())) {
                 $page->setName($post->getTitle());
                 $page->setEdited(true);
                 $this->pageManager->save($page);
             }
         }
+
+        // cleanup orphan PostHasPage
+        $this->postHasPageManager->cleanupOrphanData();
     }
 
     protected function verifyCategoryPages($post) {
+
         $postHasCategories = $post->getPostHasCategory();
         if(!empty($postHasCategories)) {
             $currentCategories = [];
@@ -188,7 +182,11 @@ class Transformer extends AbstractTransformer
 
         // check if parent has caegory
         if($parent) {
-            $pageCategory = $this->pageManager->findOneBy(array('slug'=>$parent->getSlug(), 'site'=>$post->getSite()));
+            #$pageCategory = $this->pageManager->findOneBy(array('slug'=>$parent->getSlug(), 'site'=>$post->getSite()));
+            # fix to prevent wrong association of page category
+            $categoryHasPage = $this->getCategoryHasPageManager()->findOneBy(array('category'=>$parent));
+            $pageCategory = $categoryHasPage ? $categoryHasPage->getPage() : null;
+
             if(!$pageCategory) {
                 if(!in_array($parent->getId(), $rootCategories)) {
                     return $this->createCategoryPage($parent, $currentCategory, $post, $newsCanonicalPage, $rootCategories, $parent->getParent());
@@ -197,11 +195,20 @@ class Transformer extends AbstractTransformer
         }
 
         // create category page
-        $pageCategory = $this->pageManager->findOneBy(array('slug'=>$category->getSlug(), 'site'=>$post->getSite()));
+
+        #$pageCategory = $this->pageManager->findOneBy(array('slug'=>$category->getSlug(), 'site'=>$post->getSite()));
+        # fix to prevent wrong association of page category
+        $categoryHasPage = $this->getCategoryHasPageManager()->findOneBy(array('category'=>$category));
+        $pageCategory = $categoryHasPage ? $categoryHasPage->getPage() : null;
+
         if(!$pageCategory) {
             //fetch parent page
             if($parent) {
-                $parentPageCategory = $this->pageManager->findOneBy(array('slug'=>$parent->getSlug(), 'site'=>$post->getSite()));
+                #$parentPageCategory = $this->pageManager->findOneBy(array('slug'=>$parent->getSlug(), 'site'=>$post->getSite()));
+                # fix to prevent wrong association of page category
+                $categoryHasPage = $this->getCategoryHasPageManager()->findOneBy(array('category'=>$parent));
+                $parentPageCategory = $categoryHasPage ? $categoryHasPage->getPage() : null;
+
                 if(!$parentPageCategory) {
                     $parentPageCategory = $this->pageManager->findOneBy(array('url'=>'/', 'site'=>$post->getSite()));
                 }
@@ -237,13 +244,16 @@ class Transformer extends AbstractTransformer
                 $categoryPostBlock->setSetting('template', $this->getCategoryTemplate('block'));
                 $categoryPostBlock->setPage($pageCategory);
                 $this->getBlockManager()->save($categoryPostBlock);
-            } else {
-                foreach($categoryPostBlocks as $block) {
-                    $block->setParent($contentContainer);
-                    $this->getBlockManager()->save($block);
-                    $categoryPostBlock = $block;
-                    break;
-                }
+
+                # Manually removed block should not be restored.
+                # TODO: Orphan blocks should be delted
+//            } else {
+//                foreach($categoryPostBlocks as $block) {
+//                    $block->setParent($contentContainer);
+//                    $this->getBlockManager()->save($block);
+//                    $categoryPostBlock = $block;
+//                    break;
+//                }
             }
 
             //check if block is existing on Category Has Page

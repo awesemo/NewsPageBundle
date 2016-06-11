@@ -199,7 +199,7 @@ class RzNewsPageExtension extends Extension
                 'fieldName' => 'page',
                 'targetEntity' => $config['class']['page'],
                 'cascade' => array(
-                    'persist',
+                    1 => 'detach',
                 ),
                 'mappedBy' => NULL,
                 'inversedBy' => NULL,
@@ -207,6 +207,7 @@ class RzNewsPageExtension extends Extension
                     array(
                         'name' => 'page_id',
                         'referencedColumnName' => 'id',
+                        'onDelete' => 'SET NULL',
                     ),
                 ),
                 'orphanRemoval' => false,
@@ -216,7 +217,7 @@ class RzNewsPageExtension extends Extension
                 'fieldName' => 'block',
                 'targetEntity' => $config['class']['block'],
                 'cascade' => array(
-                    'persist',
+                    1 => 'detach',
                 ),
                 'mappedBy' => NULL,
                 'inversedBy' => NULL,
@@ -224,6 +225,7 @@ class RzNewsPageExtension extends Extension
                     array(
                         'name' => 'block_id',
                         'referencedColumnName' => 'id',
+                        'onDelete' => 'SET NULL',
                     ),
                 ),
                 'orphanRemoval' => false,
@@ -233,7 +235,7 @@ class RzNewsPageExtension extends Extension
                 'fieldName' => 'sharedBlock',
                 'targetEntity' => $config['class']['block'],
                 'cascade' => array(
-                    'persist',
+                    1 => 'detach',
                 ),
                 'mappedBy' => NULL,
                 'inversedBy' => NULL,
@@ -241,6 +243,7 @@ class RzNewsPageExtension extends Extension
                     array(
                         'name' => 'shared_block_id',
                         'referencedColumnName' => 'id',
+                        'onDelete' => 'SET NULL',
                     ),
                 ),
                 'orphanRemoval' => false,
