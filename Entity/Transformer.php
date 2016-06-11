@@ -246,7 +246,7 @@ class Transformer extends AbstractTransformer
                 $this->getBlockManager()->save($categoryPostBlock);
 
                 # Manually removed block should not be restored.
-                # TODO: Orphan blocks should be delted
+                # TODO: Orphan blocks should be deleted
 //            } else {
 //                foreach($categoryPostBlocks as $block) {
 //                    $block->setParent($contentContainer);
