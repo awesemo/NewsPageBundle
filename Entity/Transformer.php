@@ -213,57 +213,49 @@ class Transformer extends AbstractTransformer
                     $parentPageCategory = $this->pageManager->findOneBy(array('url'=>'/', 'site'=>$post->getSite()));
                 }
             }
+
             $pageCategory = $this->createPage($post, $parentPageCategory, $newsCanonicalPage, $category->getName(), null, $this->getPageService('category'), $this->getCategoryTemplate('page'));
-        }
 
-        ################################
-        #Create category post list block
-        ################################
-        if (interface_exists('Rz\CategoryPageBundle\Model\CategoryHasPageInterface')) {
+            ################################
+            #Create category post list block
+            ################################
+            if (interface_exists('Rz\CategoryPageBundle\Model\CategoryHasPageInterface')) {
 
-            $contentContainer = $pageCategory->getContainerByCode('content');
-            if(!$contentContainer) {
-                // create container block
-                $pageCategory->addBlocks($contentContainer = $this->getBlockInteractor()->createNewContainer(array(
-                    'enabled' => true,
-                    'page' => $pageCategory,
-                    'code' => 'content',
-                )));
-                $contentContainer->setName('The category post list content container');
-                $this->getBlockManager()->save($contentContainer);
-            }
+                $contentContainer = $pageCategory->getContainerByCode('content');
+                if(!$contentContainer) {
+                    // create container block
+                    $pageCategory->addBlocks($contentContainer = $this->getBlockInteractor()->createNewContainer(array(
+                        'enabled' => true,
+                        'page' => $pageCategory,
+                        'code' => 'content',
+                    )));
+                    $contentContainer->setName('The category post list content container');
+                    $this->getBlockManager()->save($contentContainer);
+                }
 
-            $categoryPostBlocks = $pageCategory->getBlocksByType($this->getCategoryPostListService());
+                $categoryPostBlocks = $pageCategory->getBlocksByType($this->getCategoryPostListService());
 
-            if(empty($categoryPostBlocks)) {
-                $contentContainer->addChildren($categoryPostBlock = $this->getBlockManager()->create());
-                $categoryPostBlock->setType($this->getCategoryPostListService());
-                $categoryPostBlock->setName(sprintf('%s - %s', 'Category Post List Block', $category->getName()));
-                $categoryPostBlock->setSetting('categoryId', $category->getId());
-                //TODO: REQUIRED PARAMS
-                $categoryPostBlock->setSetting('template', $this->getCategoryTemplate('block'));
-                $categoryPostBlock->setPage($pageCategory);
-                $this->getBlockManager()->save($categoryPostBlock);
+                if(empty($categoryPostBlocks)) {
 
-                # Manually removed block should not be restored.
-                # TODO: Orphan blocks should be deleted
-//            } else {
-//                foreach($categoryPostBlocks as $block) {
-//                    $block->setParent($contentContainer);
-//                    $this->getBlockManager()->save($block);
-//                    $categoryPostBlock = $block;
-//                    break;
-//                }
-            }
+                    $contentContainer->addChildren($categoryPostBlock = $this->getBlockManager()->create());
+                    $categoryPostBlock->setType($this->getCategoryPostListService());
+                    $categoryPostBlock->setName(sprintf('%s - %s', 'Category Post List Block', $category->getName()));
+                    $categoryPostBlock->setSetting('categoryId', $category->getId());
+                    //TODO: REQUIRED PARAMS
+                    $categoryPostBlock->setSetting('template', $this->getCategoryTemplate('block'));
+                    $categoryPostBlock->setPage($pageCategory);
+                    $this->getBlockManager()->save($categoryPostBlock);
+                }
 
-            //check if block is existing on Category Has Page
-            $categoryHasPage = $this->getCategoryHasPageManager()->findOneBy(array('category'=>$category, 'page'=>$pageCategory)) ?: null;
-            if(!$categoryHasPage) {
-                $categoryHasPage = $this->getCategoryHasPageManager()->create();
-                $categoryHasPage->setCategory($category);
-                $categoryHasPage->setPage($pageCategory);
-                $categoryHasPage->setBlock($categoryPostBlock);
-                $this->getCategoryHasPageManager()->save($categoryHasPage);
+                //check if block is existing on Category Has Page
+                $categoryHasPage = $this->getCategoryHasPageManager()->findOneBy(array('category'=>$category, 'page'=>$pageCategory)) ?: null;
+                if(!$categoryHasPage) {
+                    $categoryHasPage = $this->getCategoryHasPageManager()->create();
+                    $categoryHasPage->setCategory($category);
+                    $categoryHasPage->setPage($pageCategory);
+                    $categoryHasPage->setBlock($categoryPostBlock);
+                    $this->getCategoryHasPageManager()->save($categoryHasPage);
+                }
             }
         }
 
