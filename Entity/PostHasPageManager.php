@@ -38,7 +38,11 @@ class PostHasPageManager extends BaseEntityManager
         $query->setParameters($parameters)
             ->setMaxResults(1);
 
-        return $query->getQuery()->useResultCache(true, 3600)->getSingleResult();
+        try {
+            return $query->getQuery()->useResultCache(true, 3600)->getSingleResult();
+        } catch(\Doctrine\ORM\NoResultException $e) {
+            return;
+        }
     }
 
     public function findOneByPostAndCategory($criteria) {
@@ -67,7 +71,11 @@ class PostHasPageManager extends BaseEntityManager
         $query->setParameters($parameters)
             ->setMaxResults(1);
 
-        return $query->getQuery()->useResultCache(true, 3600)->getSingleResult();
+        try {
+            return $query->getQuery()->useResultCache(true, 3600)->getSingleResult();
+        } catch(\Doctrine\ORM\NoResultException $e) {
+            return;
+        }
     }
 
     public function findOneByPageAndCategory($criteria) {
@@ -93,8 +101,7 @@ class PostHasPageManager extends BaseEntityManager
 
         try {
             return $query->getQuery()->useResultCache(true, 3600)->getSingleResult();
-        }
-        catch(\Doctrine\ORM\NoResultException $e) {
+        } catch(\Doctrine\ORM\NoResultException $e) {
             return;
         }
     }
@@ -123,8 +130,7 @@ class PostHasPageManager extends BaseEntityManager
 
         try {
             return $query->getQuery()->useResultCache(true, 3600)->getSingleResult();
-        }
-        catch(\Doctrine\ORM\NoResultException $e) {
+        } catch(\Doctrine\ORM\NoResultException $e) {
             return;
         }
     }
@@ -190,7 +196,11 @@ class PostHasPageManager extends BaseEntityManager
             ->setParameter('post', $post)
             ->setMaxResults(1);
 
-        return $qb->getQuery()->useResultCache(true, 3600)->getSingleResult();
+        try {
+            return $qb->getQuery()->useResultCache(true, 3600)->getSingleResult();
+        } catch(\Doctrine\ORM\NoResultException $e) {
+            return;
+        }
     }
 
     /**
@@ -276,8 +286,7 @@ class PostHasPageManager extends BaseEntityManager
 
         try {
             return $qb->getQuery()->useResultCache(true, 3600)->getSingleResult();
-        }
-        catch(\Doctrine\ORM\NoResultException $e) {
+        } catch(\Doctrine\ORM\NoResultException $e) {
             return;
         }
     }
