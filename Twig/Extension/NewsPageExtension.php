@@ -90,6 +90,11 @@ class NewsPageExtension extends \Twig_Extension implements \Twig_Extension_InitR
     public function pageByPost($post)
     {
         $postHasPage = $this->postHasPageManager->fetchCanonicalPage($post);
+
+        if(!$postHasPage) {
+            return null;
+        }
+
         return $postHasPage->getPage();
     }
 
@@ -102,6 +107,11 @@ class NewsPageExtension extends \Twig_Extension implements \Twig_Extension_InitR
     public function pageByCategoryAndPost($category, $post)
     {
         $postHasPage = $this->postHasPageManager->findOneByPostAndCategory(array('category'=>$category, 'post'=>$post, 'is_canonical'=>false));
+
+        if(!$postHasPage) {
+            return null;
+        }
+
         return $postHasPage->getPage();
     }
 
@@ -114,6 +124,10 @@ class NewsPageExtension extends \Twig_Extension implements \Twig_Extension_InitR
     public function pageByCategory($category)
     {
         $categoryHasPage = $this->categoryHasPageManager->findOneByCategory(array('category'=>$category));
+
+        if(!$categoryHasPage) {
+            return null;
+        }
         return $categoryHasPage->getPage();
     }
 }
