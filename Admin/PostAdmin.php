@@ -22,69 +22,37 @@ class PostAdmin extends Admin
     /**
      * {@inheritdoc}
      */
+    public function create($object)
+    {
+        $this->prePersist($object);
+        foreach ($this->extensions as $extension) {
+            $extension->prePersist($this, $object);
+        }
+
+        $result = $this->getModelManager()->create($object);
+        // BC compatibility
+        if (null !== $result) {
+            $object = $result;
+        }
+
+        $this->postPersist($object);
+        foreach ($this->extensions as $extension) {
+
+            $extension->postPersist($this, $object);
+        }
+
+        $this->createObjectSecurity($object);
+
+        return $object;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function configureFormFields(FormMapper $formMapper)
     {
 
-        if($this->hasProvider()) {
-            $formMapper
-                ->tab('tab.rz_news')
-                    ->with('group_post', array('class' => 'col-md-8'))->end()
-                    ->with('group_status', array('class' => 'col-md-4'))->end()
-                    ->with('group_content', array('class' => 'col-md-12'))->end()
-                ->end()
-                ->tab('tab.rz_news_settings')
-                    ->with('rz_news_settings', array('class' => 'col-md-12'))->end()
-                ->end()
-                ->tab('tab.rz_news_tags')
-                    ->with('group_classification', array('class' => 'col-md-12'))->end()
-                ->end()
-                ->tab('tab.rz_news_category')
-                    ->with('rz_news_category', array('class' => 'col-md-12'))->end()
-                ->end();
-        } else {
-            $formMapper
-                ->tab('tab.rz_news')
-                    ->with('group_post', array('class' => 'col-md-8'))->end()
-                    ->with('group_status', array('class' => 'col-md-4'))->end()
-                    ->with('group_content', array('class' => 'col-md-12'))->end()
-                ->end()
-                ->tab('tab.rz_news_tags')
-                    ->with('group_classification', array('class' => 'col-md-12'))->end()
-                ->end()
-                ->tab('tab.rz_news_category')
-                    ->with('rz_news_category', array('class' => 'col-md-12'))->end()
-                ->end();
-        }
-
-        if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
-
-            $formMapper->tab('tab.rz_news_seo_settings')
-                            ->with('rz_news_seo_settings', array('class' => 'col-md-12'))->end()
-                       ->end();
-        }
-
-        if($this->getPostHasMediaEnabled()) {
-            $formMapper
-                ->tab('tab.rz_news_media')
-                    ->with('rz_news_media', array('class' => 'col-md-12'))->end()
-                ->end();
-        }
-
-
-        if($this->getRelatedArticleEnabled()) {
-            $formMapper
-                ->tab('tab.rz_news_related_articles')
-                    ->with('rz_news_related_articles', array('class' => 'col-md-12'))->end()
-                ->end();
-        }
-
-
-        if($this->getSuggestedArticleEnabled()) {
-            $formMapper
-                ->tab('tab.rz_news_suggested_articles')
-                    ->with('rz_news_suggested_articles', array('class' => 'col-md-12'))->end()
-                ->end();
-        }
+        $this->initAdminFormStructure($formMapper);
 
         $formMapper
             ->tab('tab.rz_news')
@@ -236,32 +204,19 @@ class PostAdmin extends Admin
             } else {
                 $this->getProvider()->buildCreateForm($formMapper, $instance);
             }
+        }
 
-            //ADD page template if news does not use controller
-            $formMapper->tab('tab.rz_news_settings')->with('rz_news_settings');
-            if (interface_exists('Sonata\PageBundle\Model\BlockInteractorInterface') &&
-                $formMapper->has('settings') &&
-                !$this->getIsControllerEnabled()) {
+        if (!$this->hasProvider() && interface_exists('Sonata\PageBundle\Model\PageInterface')) {
+            $formMapper
+                ->tab('tab.rz_news_settings')
+                    ->with('rz_news_settings', array('class' => 'col-md-12',))
+                        ->add('settings', 'sonata_type_immutable_array', array('keys' => array(), 'required' => false, 'label' => false, 'attr' => array('class' => 'rz-immutable-container')))
+                    ->end()
+                ->end();
+        }
 
-                $settingsField = $formMapper->get('settings');
-
-                if ($instance && $instance->getId() && $instance->getSetting('pageTemplateCode')) {
-                    $settingsField->add('pageTemplateCode',
-                        'text',
-                        array('help_block' => $this->getTranslator()->trans('help.provider_page_template_code', array(), 'SonataNewsBundle'),
-                              'required'   => true,
-                              'attr'       => array('readonly' => 'readonly')
-                        ));
-                } else {
-                    $settingsField->add('pageTemplateCode',
-                        'choice',
-                        array('choices'    => $this->getPageTemplates(),
-                              'help_block' => $this->getTranslator()->trans('help.provider_page_template_code_new', array(), 'SonataNewsBundle'),
-                              'required'   => true
-                        ));
-                }
-            }
-            $formMapper->end()->end();
+        if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
+            $this->addPageTemplateCodeSettings($instance, $formMapper->get('settings'));
         }
 
         //SEO PROVIDER
@@ -272,6 +227,89 @@ class PostAdmin extends Admin
             } else {
                 $this->seoProvider->buildCreateForm($formMapper, $instance);
             }
+        }
+    }
+
+    protected function initAdminFormStructure($formMapper) {
+
+        $formMapper
+            ->tab('tab.rz_news')
+                ->with('group_post',           array('class' => 'col-md-8'))->end()
+                ->with('group_status',         array('class' => 'col-md-4'))->end()
+                ->with('group_content',        array('class' => 'col-md-12'))->end()
+            ->end()
+            ->tab('tab.rz_news_settings')
+                ->with('rz_news_settings',     array('class' => 'col-md-12'))->end()
+            ->end()
+            ->tab('tab.rz_news_tags')
+                ->with('group_classification', array('class' => 'col-md-12'))->end()
+            ->end()
+            ->tab('tab.rz_news_category')
+                ->with('rz_news_category',     array('class' => 'col-md-12'))->end()
+            ->end();
+
+        if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
+            $formMapper
+                ->tab('tab.rz_news_settings')
+                    ->with('rz_news_settings', array('class' => 'col-md-12'))->end()
+                ->end();
+        }
+
+        $formMapper
+            ->tab('tab.rz_news_tags')
+                ->with('group_classification', array('class' => 'col-md-12'))->end()
+            ->end()
+            ->tab('tab.rz_news_category')
+                ->with('rz_news_category', array('class' => 'col-md-12'))->end()
+            ->end();
+
+        if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
+            $formMapper
+                ->tab('tab.rz_news_seo_settings')
+                    ->with('rz_news_seo_settings', array('class' => 'col-md-12'))->end()
+               ->end();
+        }
+
+        if($this->getPostHasMediaEnabled()) {
+            $formMapper
+                ->tab('tab.rz_news_media')
+                    ->with('rz_news_media',  array('class' => 'col-md-12'))->end()
+                ->end();
+        }
+
+
+        if($this->getRelatedArticleEnabled()) {
+            $formMapper
+                ->tab('tab.rz_news_related_articles')
+                    ->with('rz_news_related_articles', array('class' => 'col-md-12'))->end()
+                ->end();
+        }
+
+
+        if($this->getSuggestedArticleEnabled()) {
+            $formMapper
+                ->tab('tab.rz_news_suggested_articles')
+                    ->with('rz_news_suggested_articles', array('class' => 'col-md-12'))->end()
+                ->end();
+        }
+    }
+
+    protected function addPageTemplateCodeSettings($instance,$settingsField) {
+
+        if ($instance && $instance->getId() && $instance->getSetting('pageTemplateCode')) {
+            $settingsField->add('pageTemplateCode',
+                'text',
+                array('help_block' => $this->getTranslator()->trans('help.provider_page_template_code', array(), 'SonataNewsBundle'),
+                      'required'   => true,
+                      'attr'       => array('readonly' => 'readonly')
+                ));
+        } else {
+            $settingsField->add('pageTemplateCode',
+                'choice',
+                array('choices'    => $this->getPageTemplates(),
+                      'help_block' => $this->getTranslator()->trans('help.provider_page_template_code_new', array(), 'SonataNewsBundle'),
+                      'required'   => true
+                ));
         }
     }
 
@@ -412,13 +450,13 @@ class PostAdmin extends Admin
     public function postPersist($object)
     {
         parent::postPersist($object);
+        if($this->hasSeoProvider() && interface_exists('Sonata\PageBundle\Model\PageInterface')) {
+            $this->getSeoProvider()->postPersist($object);
+        }
+
         if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
             $object->setPostHasPage($object->getPostHasPage());
             $this->getTransformer()->create($object);
-        }
-
-        if($this->hasSeoProvider() && interface_exists('Sonata\PageBundle\Model\PageInterface')) {
-            $this->getSeoProvider()->postPersist($object);
         }
     }
 

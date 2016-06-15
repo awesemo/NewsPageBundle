@@ -123,7 +123,12 @@ class Transformer extends AbstractTransformer
                     $page->setName($post->getTitle());
                     $page->setSlug(Page::slugify($post->getTitle()));
                     $page->setEdited(true);
-                    $this->pageManager->save($page);
+
+                    try{
+                        $this->getPageManager()->save($page);
+                    } catch(\Exception $e) {
+                        throw $e;
+                    }
                 }
             }
         }
@@ -134,7 +139,12 @@ class Transformer extends AbstractTransformer
             if($page && ($post->getTitle() != $page->getName())) {
                 $page->setName($post->getTitle());
                 $page->setEdited(true);
-                $this->pageManager->save($page);
+
+                try{
+                    $this->getPageManager()->save($page);
+                } catch(\Exception $e) {
+                    throw $e;
+                }
             }
         }
 
@@ -230,7 +240,12 @@ class Transformer extends AbstractTransformer
                         'code' => 'content',
                     )));
                     $contentContainer->setName('The category post list content container');
-                    $this->getBlockManager()->save($contentContainer);
+
+                    try{
+                        $this->getBlockManager()->save($contentContainer);
+                    } catch(\Exception $e) {
+                        throw $e;
+                    }
                 }
 
                 $categoryPostBlocks = $pageCategory->getBlocksByType($this->getCategoryPostListService());
@@ -244,7 +259,12 @@ class Transformer extends AbstractTransformer
                     //TODO: REQUIRED PARAMS
                     $categoryPostBlock->setSetting('template', $this->getCategoryTemplate('block'));
                     $categoryPostBlock->setPage($pageCategory);
-                    $this->getBlockManager()->save($categoryPostBlock);
+
+                    try{
+                        $this->getBlockManager()->save($categoryPostBlock);
+                    } catch(\Exception $e) {
+                        throw $e;
+                    }
                 }
 
                 //check if block is existing on Category Has Page
@@ -254,7 +274,12 @@ class Transformer extends AbstractTransformer
                     $categoryHasPage->setCategory($category);
                     $categoryHasPage->setPage($pageCategory);
                     $categoryHasPage->setBlock($categoryPostBlock);
-                    $this->getCategoryHasPageManager()->save($categoryHasPage);
+
+                    try{
+                        $this->getCategoryHasPageManager()->save($categoryHasPage);
+                    } catch(\Exception $e) {
+                        throw $e;
+                    }
                 }
             }
         }
@@ -309,7 +334,13 @@ class Transformer extends AbstractTransformer
                 'code' => 'content',
             )));
             $contentContainer->setName('The post content container');
-            $this->getBlockManager()->save($contentContainer);
+
+            try{
+                $this->getBlockManager()->save($contentContainer);
+            } catch(\Exception $e) {
+                throw $e;
+            }
+
 
             // create shared block
             $contentContainer->addChildren($sharedBlock = $this->getBlockManager()->create());
@@ -319,7 +350,13 @@ class Transformer extends AbstractTransformer
             $sharedBlock->setPosition(1);
             $sharedBlock->setEnabled(true);
             $sharedBlock->setPage($newsCanonicalPage);
-            $this->getPageManager()->save($newsCanonicalPage);
+
+            try{
+                $this->getPageManager()->save($newsCanonicalPage);
+            } catch(\Exception $e) {
+                throw $e;
+            }
+
 
             return array('page'=>$newsCanonicalPage, 'shared_block'=>$sharedBlock);
 
@@ -330,6 +367,7 @@ class Transformer extends AbstractTransformer
 
     protected function createPage($post, $parent, $newsCanonicalPage=null, $name='PAGE', $slug=null, $pageType=null, $templateCode = null) {
         $page = $this->pageManager->findOneBy(array('name'=>$name, 'parent'=>$parent, 'site'=>$post->getSite()));
+
         if(!$page) {
             $page = $this->pageManager->create();
             $page->setEnabled(true);
@@ -350,8 +388,11 @@ class Transformer extends AbstractTransformer
                 $page->setSlug($slug);
             }
 
-            $page->setTemplateCode($templateCode);
-            $page = $this->pageManager->save($page);
+            try{
+                $this->getPageManager()->save($page);
+            } catch(\Exception $e) {
+                throw $e;
+            }
         }
         return $page;
     }
@@ -381,7 +422,13 @@ class Transformer extends AbstractTransformer
         $postBlock->setSetting('postId', $post->getId());
         $postBlock->setEnabled(true);
         $postBlock->setSetting('template', $post->getSetting('template'));
-        $postBlock = $this->getBlockManager()->save($postBlock);
+
+        try{
+            $this->getBlockManager()->save($postBlock);
+        } catch(\Exception $e) {
+            throw $e;
+        }
+
         return $postBlock;
     }
 
@@ -399,7 +446,12 @@ class Transformer extends AbstractTransformer
                     'code' => 'content',
                 )));
                 $contentContainer->setName('The post content container');
-                $this->getBlockManager()->save($contentContainer);
+
+                try{
+                    $this->getBlockManager()->save($contentContainer);
+                } catch(\Exception $e) {
+                    throw $e;
+                }
 
                 // create shared block
                 $contentContainer->addChildren($sharedBlock = $this->getBlockManager()->create());
@@ -409,7 +461,12 @@ class Transformer extends AbstractTransformer
                 $sharedBlock->setPosition(1);
                 $sharedBlock->setEnabled(true);
                 $sharedBlock->setPage($newsCategoryPage);
-                $this->getPageManager()->save($newsCategoryPage);
+
+                try{
+                    $this->getPageManager()->save($newsCategoryPage);
+                } catch(\Exception $e) {
+                    throw $e;
+                }
 
                 $newsCategoryPages[$catPage['page']->getId()]['page'] = $newsCategoryPage;
                 $newsCategoryPages[$catPage['page']->getId()]['shared_block'] = $sharedBlock;
@@ -440,7 +497,13 @@ class Transformer extends AbstractTransformer
                 $php->setCategory($category);
                 $isCanonical = $catPage['page']->getCanonicalPage() ? false : true;
                 $php->setIsCanonical($isCanonical);
-                $this->getPostHasPageManager()->save($php);
+
+                try{
+                    $this->getPostHasPageManager()->save($php);
+                } catch(\Exception $e) {
+                    throw $e;
+                }
+
                 $post->addPostHasPage($php);
             }
         }
