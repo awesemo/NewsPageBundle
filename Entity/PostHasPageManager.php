@@ -237,6 +237,39 @@ class PostHasPageManager extends BaseEntityManager
         return $pager;
     }
 
+    public function fetchNewsPage($criteria = [])
+    {
+        $qb = $this->getRepository()->createQueryBuilder('php');
+        $qb->select('php')
+            ->join('php.page', 'p');
+
+        $parameters = array();
+
+        # get all news pages only
+        $qb->where($qb->expr()->isNull('php.category'));
+        $qb->andWhere('php.isCanonical = :isCanonical');
+        $parameters['isCanonical'] = true;
+
+
+        if (isset($criteria['page'])) {
+            $qb->andWhere('php.page = :page');
+            $parameters['page'] = $criteria['page'];
+        }
+
+        if (isset($criteria['site'])) {
+            $qb->andWhere('p.site = :site');
+            $parameters['site'] = $criteria['site'];
+        }
+
+        $qb->setParameters($parameters)->setMaxResults(1);
+
+        try {
+            return $qb->getQuery()->useResultCache(true, 3600)->getSingleResult();
+        } catch(\Doctrine\ORM\NoResultException $e) {
+            return;
+        }
+    }
+
     public function fetchNewsPages($criteria = [])
     {
         $qb = $this->getRepository()->createQueryBuilder('php');
