@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serializer>
+    <class name="Rz\NewsPageBundle\Entity\BasePost" exclusion-policy="all" xml-root-name="post">
+        <property name="site"   serialized-name="site_id"   type="sonata_page_site_id" expose="true" since-version="1.0" groups="sonata_api_read,sonata_api_write,sonata_search" />
+
+        <property name="postHasPage"    expose="true" since-version="1.0" groups="sonata_api_read,sonata_api_write,sonata_search">
+            <type><![CDATA[ArrayCollection<Rz\NewsPageBundle\Model\PostHasPage>]]></type>
+            <xml-list inline="false" entry-name="post_has_page" />
+        </property>
+
+    </class>
+</serializer>

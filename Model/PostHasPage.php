@@ -9,16 +9,15 @@ use Rz\CoreBundle\Model\RelationModel;
 
 abstract class PostHasPage extends RelationModel implements PostHasPageInterface
 {
+    protected $position;
+    protected $updatedAt;
+    protected $createdAt;
+    protected $enabled;
     protected $page;
-
     protected $post;
-
     protected $block;
-
     protected $isCanonical;
-
     protected $sharedBlock;
-
     protected $category;
 
     public function __construct()
