@@ -79,5 +79,11 @@ class NewsPageCompilerPass implements CompilerPassInterface
         $definition = $container->getDefinition('sonata.news.admin.post');
         $definition->addMethodCall('setTransformer', array(new Reference('rz.news_page.transformer')));
 
+        ########################################
+        ## Inject Transformer to PostHasCategoryAdmin
+        ########################################
+        $definition = $container->getDefinition('rz.news.admin.post_has_category');
+        $definition->addMethodCall('setTransformer', array(new Reference('rz.news_page.transformer')));
+
     }
 }

@@ -13,36 +13,8 @@ use Sonata\AdminBundle\Route\RouteCollection;
 class PostHasCategoryAdmin extends Admin
 {
     protected $parentAssociationMapping = 'post';
-
-    /**
-     * @param \Sonata\AdminBundle\Form\FormMapper $formMapper
-     *
-     * @return void
-     */
-    protected function configureFormFields(FormMapper $formMapper)
-    {
-        if (interface_exists('Sonata\ClassificationBundle\Model\CategoryInterface')) {
-            $formMapper->add('category', 'sonata_type_model_list', array('btn_delete' => false), array());
-        }
-
-        $formMapper
-            ->add('enabled', null, array('required' => false))
-            ->add('position', 'hidden')
-        ;
-    }
-
-    /**
-     * @param  \Sonata\AdminBundle\Datagrid\ListMapper $listMapper
-     * @return void
-     */
-    protected function configureListFields(ListMapper $listMapper)
-    {
-        $listMapper
-            ->add('post', null, array('associated_property' => 'title'))
-            ->add('position', null, array('footable'=>array('attr'=>array('data-breakpoints'=>array('xs', 'sm')))))
-            ->add('post.publicationDateStart', null, array('footable'=>array('attr'=>array('data-breakpoints'=>array('xs', 'sm')))))
-        ;
-    }
+    protected $siteManager;
+    protected $transformer;
 
     /**
      * {@inheritdoc}
@@ -59,8 +31,106 @@ class PostHasCategoryAdmin extends Admin
     /**
      * {@inheritdoc}
      */
-    protected function configureRoutes(RouteCollection $collection)
+    public function configureActionButtons($action, $object = null)
     {
-        $collection->clearExcept(array('list', 'edit', 'create', 'show'));
+        $list = parent::configureActionButtons($action, $object);
+
+        if (in_array($action, array('tree', 'show', 'edit', 'delete', 'list', 'batch'))) {
+            $list['create'] = array(
+                'template' => 'RzNewsPageBundle:PostHasCategoryAdmin:Button\create_button.html.twig',
+            );
+        }
+        return $list;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSiteManager()
+    {
+        return $this->siteManager;
+    }
+
+    /**
+     * @param mixed $siteManager
+     */
+    public function setSiteManager($siteManager)
+    {
+        $this->siteManager = $siteManager;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTransformer()
+    {
+        return $this->transformer;
+    }
+
+    /**
+     * @param mixed $transformer
+     */
+    public function setTransformer($transformer)
+    {
+        $this->transformer = $transformer;
+    }
+
+
+
+    public function getPersistentParameters()
+    {
+        $parameters = parent::getPersistentParameters();
+
+        if($this->hasParentFieldDescription()) {
+            return $parameters;
+        }
+
+        $site = $this->getSite($this->getRequest()->get('site', null));
+
+        $parameters['site'] = $site ? $site->getId() : null;
+
+        return $parameters;
+    }
+
+    protected function getSite($siteId = null) {
+        $sites = $this->getSiteManager()->findBy(array());
+        $currentSite = null;
+        foreach ($sites as $site) {
+            if ($siteId && $site->getId() == $siteId) {
+                $currentSite = $site;
+            } elseif (!$siteId && $site->getIsDefault()) {
+                $currentSite = $site;
+            }
+        }
+
+        if (!$currentSite && count($sites) == 1) {
+            $currentSite = $sites[0];
+        }
+
+        return $currentSite;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function preUpdate($object)
+    {
+        parent::preUpdate($object);
+        if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
+            $post = $object->getPost();
+            $this->getTransformer()->update($post);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function postPersist($object)
+    {
+        parent::postPersist($object);
+        if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
+            $post = $object->getPost();
+            $this->getTransformer()->create($post);
+        }
     }
 }

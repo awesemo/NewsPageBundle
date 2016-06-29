@@ -22,33 +22,6 @@ class PostAdmin extends Admin
     /**
      * {@inheritdoc}
      */
-    public function create($object)
-    {
-        $this->prePersist($object);
-        foreach ($this->extensions as $extension) {
-            $extension->prePersist($this, $object);
-        }
-
-        $result = $this->getModelManager()->create($object);
-        // BC compatibility
-        if (null !== $result) {
-            $object = $result;
-        }
-
-        $this->postPersist($object);
-        foreach ($this->extensions as $extension) {
-
-            $extension->postPersist($this, $object);
-        }
-
-        $this->createObjectSecurity($object);
-
-        return $object;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     protected function configureFormFields(FormMapper $formMapper)
     {
 

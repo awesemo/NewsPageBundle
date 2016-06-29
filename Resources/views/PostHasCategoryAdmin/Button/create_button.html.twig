@@ -1,0 +1,25 @@
+{% if admin.hasRoute('create') and admin.isGranted('CREATE')%}
+    {% if admin.subClasses is empty %}
+	    {% set params = {} %}
+	    {% if currentSite is defined and currentSite.id is defined %}
+		    {% set params = params| merge({'site': currentSite.id }) %}
+	    {% endif %}
+	    {% if current_category is defined and current_category.id is defined  %}
+		    {% set params = params| merge({'category': current_category.id}) %}
+	    {% endif %}
+        <a class="sonata-action-element" href="{{ admin.generateUrl('create', params) }}">
+            <i class="fa fa-plus-circle"></i>
+            {{ 'link_action_create'|trans({}, 'SonataAdminBundle') }}</a>
+    {% else %}
+        <li class="divider" role="presentation"></li>
+        {% for subclass in admin.subclasses|keys %}
+            <li>
+                <a href="{{ admin.generateUrl('create', {'subclass': subclass}) }}">
+                    <i class="fa fa-plus-circle"></i>
+                    {{ 'link_action_create'|trans({}, 'SonataAdminBundle') }} {{ subclass|trans({}, admin.translationdomain) }}
+                </a>
+            </li>
+        {% endfor %}
+        <li class="divider" role="presentation"></li>
+    {% endif %}
+{% endif %}

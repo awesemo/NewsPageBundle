@@ -1,5 +1,22 @@
 {% extends 'RzNewsBundle:PostHasCategoryAdmin:list_alt.html.twig' %}
 
+{% block list_no_result %}
+	<div class="info-box">
+		<span class="info-box-icon bg-aqua"><i class="fa fa-arrow-circle-right"></i></span>
+		<div class="info-box-content">
+			<span class="info-box-text">{{ 'no_result'|trans({}, 'SonataAdminBundle') }}</span>
+			<div class="progress">
+				<div class="progress-bar" style="width: 0%"></div>
+			</div>
+        <span class="progress-description">
+            {% if not app.request.xmlHttpRequest %}
+                {% include 'RzNewsPageBundle:PostHasCategoryAdmin:Button/create_button.html.twig' %}
+            {% endif %}
+        </span>
+		</div>
+	</div>
+{% endblock list_no_result %}
+
 {% block list_header %}
 	<div class="box-header with-border">
 		<h3 class="box-title">
@@ -41,9 +58,9 @@
 				<ul class="nav nav-stacked">
 					{% for category in categories %}
 						{% if current_category and category.id == current_category.id %}
-							<li><a class="text-uppercase" href="{{ admin.generateUrl('list', {'site': currentSite.id, 'category': category.id }) }}">{{ category.name }}<span class="pull-right badge bg-aqua-active"><i class="fa fa-fw fa-check-circle-o"></i></span></a></li>
+							<li><a class="text-uppercase" href="{{ admin.generateUrl('list', {'site': currentSite.id, 'category': category.id }) }}">{% if category.parent %}<span class="text-light-blue">{{ category.parent }} <i class="fa fa-fw fa-chevron-circle-right"></i> </span> {% endif %}{{ category.name }}<span class="pull-right badge bg-aqua-active"><i class="fa fa-fw fa-check-circle-o"></i></span></a></li>
 						{% else %}
-							<li><a class="text-uppercase" href="{{ admin.generateUrl('list', {'site': currentSite.id, 'category': category.id }) }}">{{ category.name }}</a></li>
+							<li><a class="text-uppercase" href="{{ admin.generateUrl('list', {'site': currentSite.id, 'category': category.id }) }}">{% if category.parent %}<span class="text-light-blue">{{ category.parent }} <i class="fa fa-fw fa-chevron-circle-right"></i> </span> {% endif %}{{ category.name }}</a></li>
 						{% endif %}
 					{% else %}
 						<li><a class="text-uppercase" href="#">{{ 'no_result'|trans({}, 'SonataAdminBundle') }}</a></li>
