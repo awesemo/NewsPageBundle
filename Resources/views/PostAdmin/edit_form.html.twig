@@ -9,7 +9,7 @@
 		</div>
 	{% else %}
 		<div class="row">
-			<div class="col-md-9">
+			<div class="col-md-12 col-lg-8">
 				<form
 						{% if admin_pool.getOption('form_type') == 'horizontal' %}class="form-horizontal"{% endif %}
 						role="form"
@@ -112,7 +112,7 @@
 					{% endblock formactions %}
 				</form>
 			</div>
-			<div class="col-md-3">
+			<div class="col-md-12 col-lg-4">
 				<div class="box box-widget widget-user-2">
 					<!-- Add the bg color to the header using any of the bg-* classes -->
 					<div class="widget-user-header bg-aqua-active">
@@ -123,34 +123,41 @@
 						<h3 class="widget-user-username">{{ 'side_nav_title'|trans({}, 'SonataNewsBundle') }}</h3>
 						<h5 class="widget-user-desc">{{ 'side_nav_subtitle'|trans({}, 'SonataNewsBundle') }}</h5>
 					</div>
-					<div class="box-footer no-padding">
-						<div class="row rz-box-widget-info">
-							<div class="col-sm-6 border-right">
-								<div class="description-block">
-									<h5 class="description-header"><span class="badge bg-green"><i class="fa fa-fw fa-globe"></i></span></h5>
-									<span class="description-text">{{ 'side_nav_legend_1'|trans({}, 'SonataNewsBundle') }}</span>
-								</div>
-								<!-- /.description-block -->
-							</div>
-							<!-- /.col -->
-							<div class="col-sm-6">
-								<div class="description-block">
-									<h5 class="description-header"><span class="badge bg-aqua"><i class="fa fa-fw fa-tag"></i></span></h5>
-									<span class="description-text">{{ 'side_nav_legend_2'|trans({}, 'SonataNewsBundle') }}</span>
-								</div>
-								<!-- /.description-block -->
-							</div>
-							<!-- /.col -->
-						</div>
-						<ul class="nav nav-stacked">
+					<div class="box-footer no-border">
+						<ul class="products-list product-list-in-box">
 						{% if object.getPostHasPage|length > 0 %}
 							{% for php in object.getPostHasPage %}
 								{% if php.page %}
-								<li><a href="{{ path('admin_app_page_page_compose', {'id': php.page.id }) }}" data-toggle="tooltip" data-placement="top" title="{{  php.page.url }}" target="_blank"><div class="rz-ellipsis rz-nav-stacked-item">{{  php.page.url }}</div>{% if not php.page.canonicalPage %} <span class="pull-right badge bg-green"><i class="fa fa-fw fa-globe"></i></span>{% else %} <span class="pull-right badge bg-aqua"><i class="fa fa-fw fa-tag"></i></span>{% endif %}</a></li>
+								<li class="item">
+									<div class="product-info" style="margin-left: 10px;">
+											<a href="{{ path('admin_app_page_page_compose', {'id': php.page.id }) }}" class="product-title" data-toggle="tooltip" data-placement="top" title="{{  php.page.url }}" target="_blank">
+												{% if not php.page.canonicalPage %}
+													<span class="badge pull-left bg-green"><i class="fa fa-fw fa-globe"></i></span>
+													&nbsp;{{ 'side_nav_canonical'|trans({}, 'SonataNewsBundle') }}
+												{% else %}
+													<span class="pull-left badge bg-aqua"><i class="fa fa-fw fa-tag"></i></span>
+													&nbsp;{{ php.category.parent.name ~ ' - ' ~ php.category.name }}
+												{% endif %}</a>
+					                        <span class="product-description">
+							                 {% if not php.page.edited %}
+								                 {% set color = 'bg-red' %}
+								                 {% set status = 'side_nav_legend_3'|trans({}, 'SonataNewsBundle') %}
+							                 {% else %}
+								                 {% set color = 'bg-purple-active' %}
+								                 {% set status = 'side_nav_legend_4'|trans({}, 'SonataNewsBundle') %}
+							                 {% endif %}
+					                            <div class="rz-ellipsis rz-nav-stacked-item">{{  php.page.url }}</div>
+						                        <a href="{{ path('page_slug', { 'path': php.page.url }) }}" data-toggle="tooltip" data-placement="left" title="{{  status }}" target="_blank">
+							                        <span class="badge pull-right {{ color }}"><i class="fa fa-fw fa-search"></i></span>
+						                        </a>
+					                        </span>
+									</div>
+									{#<a href="{{ path('admin_app_page_page_compose', {'id': php.page.id }) }}" data-toggle="tooltip" data-placement="top" title="{{  php.page.url }}" target="_blank">{% if not php.page.canonicalPage %} <span class="pull-left badge bg-green"><i class="fa fa-fw fa-globe"></i></span>{% else %} <span class="pull-left badge bg-aqua"><i class="fa fa-fw fa-tag"></i></span>{% endif %}<div class="rz-ellipsis rz-nav-stacked-item">{{  php.page.url }}</div> </a>#}
+								</li>
 								{% endif %}
 							{% endfor %}
 						{% else %}
-							<li><a href="#">{{ 'side_nav_no_record_found'|trans({}, 'SonataNewsBundle') }} <span class="pull-right badge bg-green"><i class="fa fa-fw fa-info-circle"></i></span></a></li>
+							<li><a href="#"><span class="pull-left badge bg-green"><i class="fa fa-fw fa-info-circle"></i></span>&nbsp;{{ 'side_nav_no_record_found'|trans({}, 'SonataNewsBundle') }}</a></li>
 						{% endif %}
 						</ul>
 					</div>

@@ -34,7 +34,6 @@ class PostAdmin extends Admin
                 ))
                 ->add('title')
                 ->add('image', 'sonata_type_model_list', array('required' => false), array('link_parameters' => $this->getMediaSettings()))
-                ->add('abstract', null, array('attr' => array('rows' => 5)))
                 ->end()
                 ->with('group_status', array('class' => 'col-md-4',))
                     ->add('enabled', null, array('required' => false))
@@ -162,12 +161,20 @@ class PostAdmin extends Admin
 
         #ADD page template if news does not use controller
         if ($this->isGranted('ROLE_ALLOWED_TO_SWITCH')) {
-            $formMapper->tab('tab.rz_news')->with('group_status');
+            $formMapper->tab('tab.rz_news')->with('group_post');
             if ($instance && $instance->getId()) {
                 $formMapper->add('author', 'sonata_type_model_list');
             }
             $formMapper->end()->end();
         }
+
+
+        $formMapper
+            ->tab('tab.rz_news')
+                ->with('group_post')
+                    ->add('abstract', null, array('attr' => array('rows' => 5)))
+                ->end()
+            ->end();
 
 
         if($this->hasProvider()) {

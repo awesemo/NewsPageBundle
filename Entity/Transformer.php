@@ -121,9 +121,19 @@ class Transformer extends AbstractTransformer
                 $page = $php->getPage();
                 if($page && ($post->getTitle() != $page->getName())) {
                     $page->setName($post->getTitle());
+                    $page->setTitle($post->getTitle());
                     $page->setSlug(Page::slugify($post->getTitle()));
                     $page->setEdited(true);
-
+                    try{
+                        $this->getPageManager()->save($page);
+                    } catch(\Exception $e) {
+                        throw $e;
+                    }
+                }
+                #TODO add configurable pattern for category pages
+                if($page && !$page->getTitle()) {
+                    $page->setTitle($post->getTitle());
+                    $page->setEdited(true);
                     try{
                         $this->getPageManager()->save($page);
                     } catch(\Exception $e) {
@@ -189,7 +199,6 @@ class Transformer extends AbstractTransformer
                                           $newsCanonicalPage,
                                           $rootCategories,
                                           $parent = null){
-
         // check if parent has caegory
         if($parent) {
             #$pageCategory = $this->pageManager->findOneBy(array('slug'=>$parent->getSlug(), 'site'=>$post->getSite()));
@@ -372,6 +381,7 @@ class Transformer extends AbstractTransformer
             $page = $this->pageManager->create();
             $page->setEnabled(true);
             $page->setName($name);
+            $page->setTitle($name);
             $page->setRouteName(\Sonata\PageBundle\Model\PageInterface::PAGE_ROUTE_CMS_NAME);
             $page->setPosition(1);
             $page->setDecorate(true);
@@ -394,6 +404,7 @@ class Transformer extends AbstractTransformer
                 throw $e;
             }
         }
+
         return $page;
     }
 

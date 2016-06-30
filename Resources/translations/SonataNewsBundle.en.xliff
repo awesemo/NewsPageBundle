@@ -146,6 +146,19 @@
                 <source>side_nav_legend_2</source>
                 <target>Canonical</target>
             </trans-unit>
+            <trans-unit id="side_nav_legend_3">
+                <source>side_nav_legend_3</source>
+                <target>Edited</target>
+            </trans-unit>
+            <trans-unit id="side_nav_legend_4">
+                <source>side_nav_legend_4</source>
+                <target>Published</target>
+            </trans-unit>
+            <trans-unit id="side_nav_canonical">
+                <source>side_nav_canonical</source>
+                <target>Canonical Page</target>
+            </trans-unit>
+
             <trans-unit id="side_nav_no_record_found">
                 <source>side_nav_no_record_found</source>
                 <target>Pages will be generated on save.</target>
