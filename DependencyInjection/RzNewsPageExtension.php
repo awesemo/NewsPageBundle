@@ -299,6 +299,40 @@ class RzNewsPageExtension extends Extension
                     'orphanRemoval' => false,
                 ));
             }
+
+            $collector->addAssociation($config['class']['related_articles'], 'mapManyToOne', array(
+                'fieldName' => 'postHasPage',
+                'targetEntity' => $config['class']['post_has_page'],
+                'cascade' => array(
+                    'persist',
+                ),
+                'mappedBy' => NULL,
+                'inversedBy' => NULL,
+                'joinColumns' => array(
+                    array(
+                        'name' => 'post_has_page_id',
+                        'referencedColumnName' => 'id',
+                    ),
+                ),
+                'orphanRemoval' => false,
+            ));
+
+            $collector->addAssociation($config['class']['suggested_articles'], 'mapManyToOne', array(
+                'fieldName' => 'postHasPage',
+                'targetEntity' => $config['class']['post_has_page'],
+                'cascade' => array(
+                    'persist',
+                ),
+                'mappedBy' => NULL,
+                'inversedBy' => NULL,
+                'joinColumns' => array(
+                    array(
+                        'name' => 'post_has_page_id',
+                        'referencedColumnName' => 'id',
+                    ),
+                ),
+                'orphanRemoval' => false,
+            ));
         }
     }
 }

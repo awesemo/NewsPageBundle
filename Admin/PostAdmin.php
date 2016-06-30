@@ -130,7 +130,7 @@ class PostAdmin extends Admin
                                 'edit'              => 'inline',
                                 'inline'            => 'table',
                                 'sortable'          => 'position',
-                                'link_parameters'   => array('context' => $this->getDefaultContext()),
+                                'link_parameters'   => $this->getRelatedArticleSettings(),
                                 'admin_code'        => 'rz.news.admin.related_articles'))
                     ->end()
                 ->end();
@@ -523,5 +523,26 @@ class PostAdmin extends Admin
         if($this->hasSeoProvider()) {
             $this->getSeoProvider()->validate($errorElement, $object);
         }
+    }
+
+    public function getRelatedArticleSettings() {
+
+        $settings = parent::getRelatedArticleSettings();
+        $settings = array_merge($settings, array('site'        => $this->getPersistentParameter('site'),
+                                                 'hide_site'   => true,
+                                                 'isCanonical' => 'ALL'));
+        return $settings;
+    }
+
+    public function getSuggetedArticleSettings() {
+
+        $settings = parent::getSuggetedArticleSettings();
+        $settings = array_merge($settings, array('site'        => $this->getPersistentParameter('site'),
+                                                 'hide_site'   => true,
+                                                 'collection'  => $this->getPersistentParameter('collection'),
+                                                 'isCanonical' => 'ALL'));
+
+
+        return $settings;
     }
 }

@@ -68,5 +68,12 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
         ########################################
         $definition = $container->getDefinition('rz.news.admin.post_has_category');
         $definition->addMethodCall('setSiteManager', array(new Reference('sonata.page.manager.site')));
+
+        ########################################
+        ## PostHasPageAdmin
+        ########################################
+        $definition = $container->getDefinition('rz.news_page.admin.post_has_page');
+        $definition->addMethodCall('setSiteManager', array(new Reference('sonata.page.manager.site')));
+
     }
 }

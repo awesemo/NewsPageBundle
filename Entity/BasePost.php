@@ -121,4 +121,29 @@ abstract class BasePost extends Post
     {
         $this->site = $site;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addRelatedArticle(RelatedArticlesInterface $relatedArticle)
+    {
+        $relatedArticle->setPost($this);
+        if($relatedArticle->getPostHasPage()) {
+            $relatedArticle->setRelatedArticle($relatedArticle->getPostHasPage()->getPost());
+        }
+        $this->relatedArticles[] = $relatedArticle;
+    }
+
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addSuggestedArticle(SuggestedArticlesInterface $suggestedArticle)
+    {
+        $suggestedArticle->setPost($this);
+        if($suggestedArticle->getPostHasPage()) {
+            $suggestedArticle->setSuggestedArticle($suggestedArticle->getPostHasPage()->getPost());
+        }
+        $this->suggestedArticles[] = $suggestedArticle;
+    }
 }

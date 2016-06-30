@@ -31,7 +31,7 @@ abstract class PostHasPage extends RelationModel implements PostHasPageInterface
      */
     public function __toString()
     {
-        return $this->getPage().' | '.$this->getPost();
+        return $this->getPost()->getTitle() ?: 'n/a';
     }
 
     public function getPage()

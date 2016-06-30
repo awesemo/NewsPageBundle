@@ -370,6 +370,10 @@
                 <source>rz.news_page.block.service.post_list_by_category</source>
                 <target>Post List By Category</target>
             </trans-unit>
+            <trans-unit id="form.label_post_has_page">
+                <source>form.label_post_has_page</source>
+                <target>Post Page</target>
+            </trans-unit>
             <trans-unit id="label_post_has_page">
                 <source>label_post_has_page</source>
                 <target>Pages | Post</target>
