@@ -90,7 +90,6 @@
 										{% endif %}
 
 										{% if admin.hasroute('delete') and admin.isGranted('DELETE', object) %}
-											{#{{ 'delete_or'|trans({}, 'SonataAdminBundle') }}#}
 											<a class="btn btn-danger" href="{{ admin.generateObjectUrl('delete', object) }}"><i class="fa fa-minus-circle"></i> <span class="hidden-xs hidden-sm">{{ 'link_delete'|trans({}, 'SonataAdminBundle') }}</span></a>
 										{% endif %}
 
@@ -139,7 +138,7 @@
 													&nbsp;{{ php.category.parent.name ~ ' - ' ~ php.category.name }}
 												{% endif %}</a>
 					                        <span class="product-description">
-							                 {% if not php.page.edited %}
+							                 {% if php.page.edited %}
 								                 {% set color = 'bg-red' %}
 								                 {% set status = 'side_nav_legend_3'|trans({}, 'SonataNewsBundle') %}
 							                 {% else %}
@@ -152,7 +151,6 @@
 						                        </a>
 					                        </span>
 									</div>
-									{#<a href="{{ path('admin_app_page_page_compose', {'id': php.page.id }) }}" data-toggle="tooltip" data-placement="top" title="{{  php.page.url }}" target="_blank">{% if not php.page.canonicalPage %} <span class="pull-left badge bg-green"><i class="fa fa-fw fa-globe"></i></span>{% else %} <span class="pull-left badge bg-aqua"><i class="fa fa-fw fa-tag"></i></span>{% endif %}<div class="rz-ellipsis rz-nav-stacked-item">{{  php.page.url }}</div> </a>#}
 								</li>
 								{% endif %}
 							{% endfor %}
