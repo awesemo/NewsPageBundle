@@ -146,4 +146,10 @@ abstract class BasePost extends Post
         }
         $this->suggestedArticles[] = $suggestedArticle;
     }
+
+    public function __clone() {
+        parent::__clone();
+        $this->seoSettings = null;
+        $this->postHasPage = new ArrayCollection();
+    }
 }

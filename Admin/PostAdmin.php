@@ -6,10 +6,11 @@ use Rz\NewsBundle\Admin\PostAdmin as Admin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
-use Knp\Menu\ItemInterface as MenuItemInterface;
+use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\AdminBundle\Admin\AdminInterface;
 use Sonata\CoreBundle\Model\ManagerInterface;
 use Sonata\CoreBundle\Validator\ErrorElement;
+use Knp\Menu\ItemInterface as MenuItemInterface;
 
 class PostAdmin extends Admin
 {
