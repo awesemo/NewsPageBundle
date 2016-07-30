@@ -25,7 +25,7 @@ class PostHasCategoryAdmin extends Admin
             ->add('post.site', null, array('show_filter' => false))
             ->add('post.title')
             ->add('post.publicationDateStart', 'doctrine_orm_datetime_range', array('field_type' => 'sonata_type_datetime_range_picker'))
-            ->add('category', null, array('show_filter' => false,));
+            ->add('category', null, array('show_filter' => false, ));
     }
 
     /**
@@ -81,7 +81,7 @@ class PostHasCategoryAdmin extends Admin
     {
         $parameters = parent::getPersistentParameters();
 
-        if($this->hasParentFieldDescription()) {
+        if ($this->hasParentFieldDescription()) {
             return $parameters;
         }
 
@@ -92,7 +92,8 @@ class PostHasCategoryAdmin extends Admin
         return $parameters;
     }
 
-    protected function getSite($siteId = null) {
+    protected function getSite($siteId = null)
+    {
         $sites = $this->getSiteManager()->findBy(array());
         $currentSite = null;
         foreach ($sites as $site) {

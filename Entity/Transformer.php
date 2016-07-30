@@ -72,15 +72,15 @@ class Transformer extends AbstractTransformer
             # Create Category Post
             ########################################
             $newsCategoryPages = null;
-            if(count($categoryPages) > 0 && ($newsCanonicalPage && isset($newsCanonicalPage['page'])) && $postBlock) {
+            if (count($categoryPages) > 0 && ($newsCanonicalPage && isset($newsCanonicalPage['page'])) && $postBlock) {
                 $newsCategoryPages = $this->createCategoryPostPages($categoryPages, $post, $postBlock, $newsCanonicalPage['page']);
             }
 
             ########################################
             # Create Post Has Page
             ########################################
-            if($newsCanonicalPage && isset($newsCanonicalPage['page']) && $postBlock) {
-                if(count($newsCategoryPages) > 0) {
+            if ($newsCanonicalPage && isset($newsCanonicalPage['page']) && $postBlock) {
+                if (count($newsCategoryPages) > 0) {
                     $newsCategoryPages = array_merge(array($newsCanonicalPage['page']->getId() => $newsCanonicalPage), $newsCategoryPages);
                 } else {
                     $newsCategoryPages = array($newsCanonicalPage['page']->getId() => $newsCanonicalPage);
@@ -103,7 +103,6 @@ class Transformer extends AbstractTransformer
             $emBlockManager->getConnection()->commit();
             $emCategoryHasPageManager->getConnection()->commit();
             $emPostHasPageManager->getConnection()->commit();
-
         } catch (\Exception $e) {
             //Rollback Transaction
             $emPageManager->getConnection()->rollback();
@@ -113,30 +112,31 @@ class Transformer extends AbstractTransformer
         }
     }
 
-    protected function updatePages($post) {
+    protected function updatePages($post)
+    {
         $postHasPage = $this->postHasPageManager->fetchCategoryPages($post);
-        if(count($postHasPage)>0) {
+        if (count($postHasPage)>0) {
             //update each page to trigger fix URL
-            foreach($postHasPage as $php) {
+            foreach ($postHasPage as $php) {
                 $page = $php->getPage();
-                if($page && ($post->getTitle() != $page->getName())) {
+                if ($page && ($post->getTitle() != $page->getName())) {
                     $page->setName($post->getTitle());
                     $page->setTitle($post->getTitle());
                     $page->setSlug(Page::slugify($post->getTitle()));
                     $page->setEdited(true);
-                    try{
+                    try {
                         $this->getPageManager()->save($page);
-                    } catch(\Exception $e) {
+                    } catch (\Exception $e) {
                         throw $e;
                     }
                 }
                 #TODO add configurable pattern for category pages
-                if($page && !$page->getTitle()) {
+                if ($page && !$page->getTitle()) {
                     $page->setTitle($post->getTitle());
                     $page->setEdited(true);
-                    try{
+                    try {
                         $this->getPageManager()->save($page);
-                    } catch(\Exception $e) {
+                    } catch (\Exception $e) {
                         throw $e;
                     }
                 }
@@ -144,15 +144,15 @@ class Transformer extends AbstractTransformer
         }
         //update canonical page
         $postHasPageCanonical = $this->postHasPageManager->fetchCanonicalPage($post);
-        if($postHasPageCanonical) {
+        if ($postHasPageCanonical) {
             $page = $postHasPageCanonical->getPage();
-            if($page && ($post->getTitle() != $page->getName())) {
+            if ($page && ($post->getTitle() != $page->getName())) {
                 $page->setName($post->getTitle());
                 $page->setEdited(true);
 
-                try{
+                try {
                     $this->getPageManager()->save($page);
-                } catch(\Exception $e) {
+                } catch (\Exception $e) {
                     throw $e;
                 }
             }
@@ -162,25 +162,25 @@ class Transformer extends AbstractTransformer
         $this->postHasPageManager->cleanupOrphanData();
     }
 
-    protected function verifyCategoryPages($post) {
-
+    protected function verifyCategoryPages($post)
+    {
         $postHasCategories = $post->getPostHasCategory();
-        if(!empty($postHasCategories)) {
+        if (!empty($postHasCategories)) {
             $currentCategories = [];
             // loop through each post categegory
-            foreach($postHasCategories as $postHasCategory) {
+            foreach ($postHasCategories as $postHasCategory) {
                 $currentCategories[] = $postHasCategory->getCategory()->getId();
             }
 
             $postHasPage = null;
-            if(count($currentCategories)>0) {
+            if (count($currentCategories)>0) {
                 $postHasPage = $this->postHasPageManager->fetchCategoryPageForCleanup($post, $currentCategories);
             }
 
-            if(count($postHasPage) >0) {
+            if (count($postHasPage) >0) {
                 $phpIDs = [];
                 $pageIDs = [];
-                foreach($postHasPage as $php) {
+                foreach ($postHasPage as $php) {
                     $phpIDs[] = $php->getId();
                     $pageIDs[] = $php->getPage()->getId();
                 }
@@ -188,7 +188,6 @@ class Transformer extends AbstractTransformer
                 $this->postHasPageManager->cleanupPostHasPage($post, $phpIDs);
                 //remmove Page
                 $this->pageManager->cleanupPages($pageIDs);
-
             }
         }
     }
@@ -198,16 +197,17 @@ class Transformer extends AbstractTransformer
                                           PostInterface $post,
                                           $newsCanonicalPage,
                                           $rootCategories,
-                                          $parent = null){
+                                          $parent = null)
+    {
         // check if parent has caegory
-        if($parent) {
+        if ($parent) {
             #$pageCategory = $this->pageManager->findOneBy(array('slug'=>$parent->getSlug(), 'site'=>$post->getSite()));
             # fix to prevent wrong association of page category
             $categoryHasPage = $this->getCategoryHasPageManager()->findOneBy(array('category'=>$parent));
             $pageCategory = $categoryHasPage ? $categoryHasPage->getPage() : null;
 
-            if(!$pageCategory) {
-                if(!in_array($parent->getId(), $rootCategories)) {
+            if (!$pageCategory) {
+                if (!in_array($parent->getId(), $rootCategories)) {
                     return $this->createCategoryPage($parent, $currentCategory, $post, $newsCanonicalPage, $rootCategories, $parent->getParent());
                 }
             }
@@ -220,15 +220,15 @@ class Transformer extends AbstractTransformer
         $categoryHasPage = $this->getCategoryHasPageManager()->findOneBy(array('category'=>$category));
         $pageCategory = $categoryHasPage ? $categoryHasPage->getPage() : null;
 
-        if(!$pageCategory) {
+        if (!$pageCategory) {
             //fetch parent page
-            if($parent) {
+            if ($parent) {
                 #$parentPageCategory = $this->pageManager->findOneBy(array('slug'=>$parent->getSlug(), 'site'=>$post->getSite()));
                 # fix to prevent wrong association of page category
                 $categoryHasPage = $this->getCategoryHasPageManager()->findOneBy(array('category'=>$parent));
                 $parentPageCategory = $categoryHasPage ? $categoryHasPage->getPage() : null;
 
-                if(!$parentPageCategory) {
+                if (!$parentPageCategory) {
                     $parentPageCategory = $this->pageManager->findOneBy(array('url'=>'/', 'site'=>$post->getSite()));
                 }
             }
@@ -239,9 +239,8 @@ class Transformer extends AbstractTransformer
             #Create category post list block
             ################################
             if (interface_exists('Rz\CategoryPageBundle\Model\CategoryHasPageInterface')) {
-
                 $contentContainer = $pageCategory->getContainerByCode('content');
-                if(!$contentContainer) {
+                if (!$contentContainer) {
                     // create container block
                     $pageCategory->addBlocks($contentContainer = $this->getBlockInteractor()->createNewContainer(array(
                         'enabled' => true,
@@ -250,17 +249,16 @@ class Transformer extends AbstractTransformer
                     )));
                     $contentContainer->setName('The category post list content container');
 
-                    try{
+                    try {
                         $this->getBlockManager()->save($contentContainer);
-                    } catch(\Exception $e) {
+                    } catch (\Exception $e) {
                         throw $e;
                     }
                 }
 
                 $categoryPostBlocks = $pageCategory->getBlocksByType($this->getCategoryPostListService());
 
-                if(empty($categoryPostBlocks)) {
-
+                if (empty($categoryPostBlocks)) {
                     $contentContainer->addChildren($categoryPostBlock = $this->getBlockManager()->create());
                     $categoryPostBlock->setType($this->getCategoryPostListService());
                     $categoryPostBlock->setName(sprintf('%s - %s', 'Category Post List Block', $category->getName()));
@@ -269,37 +267,38 @@ class Transformer extends AbstractTransformer
                     $categoryPostBlock->setSetting('template', $this->getCategoryTemplate('block'));
                     $categoryPostBlock->setPage($pageCategory);
 
-                    try{
+                    try {
                         $this->getBlockManager()->save($categoryPostBlock);
-                    } catch(\Exception $e) {
+                    } catch (\Exception $e) {
                         throw $e;
                     }
                 }
 
                 //check if block is existing on Category Has Page
                 $categoryHasPage = $this->getCategoryHasPageManager()->findOneBy(array('category'=>$category, 'page'=>$pageCategory)) ?: null;
-                if(!$categoryHasPage) {
+                if (!$categoryHasPage) {
                     $categoryHasPage = $this->getCategoryHasPageManager()->create();
                     $categoryHasPage->setCategory($category);
                     $categoryHasPage->setPage($pageCategory);
                     $categoryHasPage->setBlock($categoryPostBlock);
 
-                    try{
+                    try {
                         $this->getCategoryHasPageManager()->save($categoryHasPage);
-                    } catch(\Exception $e) {
+                    } catch (\Exception $e) {
                         throw $e;
                     }
                 }
             }
         }
 
-        if($currentCategory->getId() === $category->getId()) {
+        if ($currentCategory->getId() === $category->getId()) {
             return $pageCategory;
         }
         return;
     }
 
-    protected function createCategoryPages($post, $pageCanonicalDefaultCategory) {
+    protected function createCategoryPages($post, $pageCanonicalDefaultCategory)
+    {
         $categoryPages = [];
         #TODO: transfer some process to use notification
         #TODO: should be able to control Category Parent Page
@@ -307,18 +306,18 @@ class Transformer extends AbstractTransformer
         $postHasCategories = $post->getPostHasCategory();
         $rootCategories = $this->fetchRootCategories();
         //generate category pages if post has category
-        if(!empty($postHasCategories)) {
+        if (!empty($postHasCategories)) {
             // loop through each post categegory
-            foreach($postHasCategories as $postHasCategory) {
+            foreach ($postHasCategories as $postHasCategory) {
                 $currentCat = $postHasCategory->getCategory();
                 //fetch parent categories of current category
                 $cats = $this->postHasPageManager->categoryParentWalker($currentCat, $cats);
                 krsort($cats);
                 //traverse through current category tree
-                foreach($cats as $cat) {
+                foreach ($cats as $cat) {
                     $page = $this->createCategoryPage($cat['category'], $currentCat, $postHasCategory->getPost(), $pageCanonicalDefaultCategory, $rootCategories, $cat['parent']);
                     // create Post has Page
-                    if($page) {
+                    if ($page) {
                         $categoryPages[$cat['category']->getId()]['page'] = $page;
                         $categoryPages[$cat['category']->getId()]['category'] = $cat['category'];
                     }
@@ -328,11 +327,12 @@ class Transformer extends AbstractTransformer
         return $categoryPages;
     }
 
-    protected function createCanonicalPage($post, $postBlock, $pageCanonicalDefaultCategory) {
+    protected function createCanonicalPage($post, $postBlock, $pageCanonicalDefaultCategory)
+    {
         //check if canonical page exist
         $postHasPage = $this->getPostHasPageManager()->findOneByPageAndPageHasPost(array('post'=>$post, 'parent'=>$pageCanonicalDefaultCategory)) ?: null;
 
-        if(!$postHasPage) {
+        if (!$postHasPage) {
             // create canonical page
             $newsCanonicalPage = $this->createPage($post, $pageCanonicalDefaultCategory, null, $post->getTitle(), Page::slugify($post->getId().' '.$post->getTitle()), $this->getPageService('post_canonical'), $post->getSetting('pageTemplateCode'));
 
@@ -344,9 +344,9 @@ class Transformer extends AbstractTransformer
             )));
             $contentContainer->setName('The post content container');
 
-            try{
+            try {
                 $this->getBlockManager()->save($contentContainer);
-            } catch(\Exception $e) {
+            } catch (\Exception $e) {
                 throw $e;
             }
 
@@ -355,29 +355,29 @@ class Transformer extends AbstractTransformer
             $contentContainer->addChildren($sharedBlock = $this->getBlockManager()->create());
             $sharedBlock->setType('sonata.page.block.shared_block');
             $sharedBlock->setName(sprintf('%s - %s', 'Shared Block', $post->getTitle()));
-            $sharedBlock->setSetting('blockId',$postBlock->getId());
+            $sharedBlock->setSetting('blockId', $postBlock->getId());
             $sharedBlock->setPosition(1);
             $sharedBlock->setEnabled(true);
             $sharedBlock->setPage($newsCanonicalPage);
 
-            try{
+            try {
                 $this->getPageManager()->save($newsCanonicalPage);
-            } catch(\Exception $e) {
+            } catch (\Exception $e) {
                 throw $e;
             }
 
 
             return array('page'=>$newsCanonicalPage, 'shared_block'=>$sharedBlock);
-
         } else {
             return array('page'=>$postHasPage->getPage(), 'shared_block'=>$postHasPage->getSharedBlock());
         }
     }
 
-    protected function createPage($post, $parent, $newsCanonicalPage=null, $name='PAGE', $slug=null, $pageType=null, $templateCode = null) {
+    protected function createPage($post, $parent, $newsCanonicalPage=null, $name='PAGE', $slug=null, $pageType=null, $templateCode = null)
+    {
         $page = $this->pageManager->findOneBy(array('name'=>$name, 'parent'=>$parent, 'site'=>$post->getSite()));
 
-        if(!$page) {
+        if (!$page) {
             $page = $this->pageManager->create();
             $page->setEnabled(true);
             $page->setName($name);
@@ -390,17 +390,17 @@ class Transformer extends AbstractTransformer
             $page->setCanonicalPage($newsCanonicalPage);
             $page->setParent($parent);
 
-            if($pageType) {
+            if ($pageType) {
                 $page->setType($pageType);
             }
 
-            if(!$newsCanonicalPage) {
+            if (!$newsCanonicalPage) {
                 $page->setSlug($slug);
             }
 
-            try{
+            try {
                 $this->getPageManager()->save($page);
-            } catch(\Exception $e) {
+            } catch (\Exception $e) {
                 throw $e;
             }
         }
@@ -408,9 +408,10 @@ class Transformer extends AbstractTransformer
         return $page;
     }
 
-    protected function createCanonicalCategoryPage($post) {
+    protected function createCanonicalCategoryPage($post)
+    {
         $pageCanonicalDefaultCategory = $this->pageManager->findOneBy(array('slug'=>$this->getDefaultNewsPageSlug(), 'site'=>$post->getSite()));
-        if(!$pageCanonicalDefaultCategory) {
+        if (!$pageCanonicalDefaultCategory) {
             #TODO home URL should be in a parameter
             $parent = $this->pageManager->findOneBy(array('url'=>'/', 'site'=>$post->getSite()));
             $pageCanonicalDefaultCategory = $this->createPage($post, $parent, null, $this->getDefaultNewsPageSlug(), null, $this->getPageService('category_canonical'), $this->getCategoryTemplate('page'));
@@ -418,12 +419,13 @@ class Transformer extends AbstractTransformer
         return $pageCanonicalDefaultCategory;
     }
 
-    protected function createPostBlock($post) {
+    protected function createPostBlock($post)
+    {
         $postBlock = null;
         //check if block is existing on Post Has Page
         $postHasPage = $this->getPostHasPageManager()->findOneBy(array('post'=>$post)) ?: null;
 
-        if($postHasPage && $postHasPage->getBlock()) {
+        if ($postHasPage && $postHasPage->getBlock()) {
             return $postHasPage->getBlock();
         }
 
@@ -434,20 +436,21 @@ class Transformer extends AbstractTransformer
         $postBlock->setEnabled(true);
         $postBlock->setSetting('template', $post->getSetting('template'));
 
-        try{
+        try {
             $this->getBlockManager()->save($postBlock);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
 
         return $postBlock;
     }
 
-    protected function createCategoryPostPages($categoryPages, $post, $postBlock, $canonicalPage = null) {
+    protected function createCategoryPostPages($categoryPages, $post, $postBlock, $canonicalPage = null)
+    {
         $newsCategoryPages = [];
-        foreach($categoryPages as $catPage) {
+        foreach ($categoryPages as $catPage) {
             $postHasPage = $this->getPostHasPageManager()->findOneByPageAndPageHasPost(array('post'=>$post, 'parent'=>$catPage['page'])) ?: null;
-            if(!$postHasPage) {
+            if (!$postHasPage) {
                 // create category post page
                 $newsCategoryPage = $this->createPage($post, $catPage['page'], $canonicalPage, $post->getTitle(), null, $this->getPageService('post'), $post->getSetting('pageTemplateCode'));
                 // create container block
@@ -458,9 +461,9 @@ class Transformer extends AbstractTransformer
                 )));
                 $contentContainer->setName('The post content container');
 
-                try{
+                try {
                     $this->getBlockManager()->save($contentContainer);
-                } catch(\Exception $e) {
+                } catch (\Exception $e) {
                     throw $e;
                 }
 
@@ -468,21 +471,20 @@ class Transformer extends AbstractTransformer
                 $contentContainer->addChildren($sharedBlock = $this->getBlockManager()->create());
                 $sharedBlock->setType('sonata.page.block.shared_block');
                 $sharedBlock->setName(sprintf('%s - %s', 'Shared Block', $post->getTitle()));
-                $sharedBlock->setSetting('blockId',$postBlock->getId());
+                $sharedBlock->setSetting('blockId', $postBlock->getId());
                 $sharedBlock->setPosition(1);
                 $sharedBlock->setEnabled(true);
                 $sharedBlock->setPage($newsCategoryPage);
 
-                try{
+                try {
                     $this->getPageManager()->save($newsCategoryPage);
-                } catch(\Exception $e) {
+                } catch (\Exception $e) {
                     throw $e;
                 }
 
                 $newsCategoryPages[$catPage['page']->getId()]['page'] = $newsCategoryPage;
                 $newsCategoryPages[$catPage['page']->getId()]['shared_block'] = $sharedBlock;
                 $newsCategoryPages[$catPage['page']->getId()]['category'] = $catPage['category'];
-
             } else {
                 $newsCategoryPages[$postHasPage->getId()]['page'] = $postHasPage->getPage();
                 $newsCategoryPages[$postHasPage->getId()]['shared_block'] = $postHasPage->getSharedBlock();
@@ -493,12 +495,12 @@ class Transformer extends AbstractTransformer
         return $newsCategoryPages;
     }
 
-    protected function createPostHasPage($newsCategoryPages, $post, $postBlock) {
+    protected function createPostHasPage($newsCategoryPages, $post, $postBlock)
+    {
         $postHasPage = null;
-        foreach($newsCategoryPages as $catPage) {
-
+        foreach ($newsCategoryPages as $catPage) {
             $php = $this->getPostHasPageManager()->findOneBy(array('post'=>$post, 'page'=>$catPage['page']));
-            if(!$php) {
+            if (!$php) {
                 $php = $this->getPostHasPageManager()->create();
                 $php->setPost($post);
                 $php->setPage($catPage['page']);
@@ -509,9 +511,9 @@ class Transformer extends AbstractTransformer
                 $isCanonical = $catPage['page']->getCanonicalPage() ? false : true;
                 $php->setIsCanonical($isCanonical);
 
-                try{
+                try {
                     $this->getPostHasPageManager()->save($php);
-                } catch(\Exception $e) {
+                } catch (\Exception $e) {
                     throw $e;
                 }
 

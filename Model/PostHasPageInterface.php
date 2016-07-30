@@ -5,7 +5,6 @@ use Sonata\NewsBundle\Model\PostInterface;
 use Sonata\PageBundle\Model\PageInterface;
 use Rz\CoreBundle\Model\RelationModelInterface;
 
-
 interface PostHasPageInterface extends RelationModelInterface
 {
     /**

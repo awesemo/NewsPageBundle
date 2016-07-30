@@ -17,7 +17,6 @@ use Sonata\PageBundle\Entity\BlockInteractor;
 use Sonata\PageBundle\Model\Page;
 use Rz\NewsPageBundle\Model\TransformerInterface;
 
-
 abstract class AbstractTransformer implements  TransformerInterface
 {
     protected $pageManager;
@@ -41,7 +40,8 @@ abstract class AbstractTransformer implements  TransformerInterface
                                 CategoryManagerInterface $categoryManager,
                                 ManagerInterface $postHasPageManager,
                                 BlockInteractor  $blockInteractor,
-                                RegistryInterface $registry) {
+                                RegistryInterface $registry)
+    {
         $this->postManager          = $postManager;
         $this->pageManager          = $pageManager;
         $this->blockManager         = $blockManager;
@@ -243,7 +243,8 @@ abstract class AbstractTransformer implements  TransformerInterface
         $this->pageServices = $pageServices;
     }
 
-    public function getPageService($name, $default= null) {
+    public function getPageService($name, $default= null)
+    {
         return isset($this->pageServices[$name]) ? $this->pageServices[$name] : $default;
     }
 
@@ -268,10 +269,11 @@ abstract class AbstractTransformer implements  TransformerInterface
         return isset($this->categoryTemplates[$name]) ? $this->categoryTemplates[$name] : $default;
     }
 
-    protected function fetchRootCategories() {
+    protected function fetchRootCategories()
+    {
         $rootCategories = $this->categoryManager->getRootCategories(false);
         $root = [];
-        foreach($rootCategories as $category) {
+        foreach ($rootCategories as $category) {
             $root[] = $category->getId();
         }
 

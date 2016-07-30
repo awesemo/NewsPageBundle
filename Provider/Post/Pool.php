@@ -17,7 +17,7 @@ class Pool extends BasePool
      */
     public function addCollection($name, $provider = null, $defaultTemplate = null)
     {
-        if($this->slugify) {
+        if ($this->slugify) {
             $name = $this->slugify->slugify($name);
         }
 

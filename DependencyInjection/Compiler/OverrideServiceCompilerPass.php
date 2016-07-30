@@ -26,7 +26,7 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
         #set slugify service
         $definition->addMethodCall('setSlugify', array(new Reference($serviceId)));
         $definition->addMethodCall('setIsControllerEnabled', array($container->getParameter('rz.news_page.enable_controller')));
-        if(!$container->getParameter('rz.news_page.enable_controller')) {
+        if (!$container->getParameter('rz.news_page.enable_controller')) {
             $definition->addMethodCall('setPageTemplates', array($container->getParameter('rz.news_page.page.templates')));
         }
 
@@ -38,7 +38,7 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
         if (interface_exists('Sonata\PageBundle\Model\BlockInteractorInterface')) {
             $blocks = $container->getParameter('sonata_block.blocks');
             $blockService = $container->getParameter('rz.news_page.post_block_service');
-            if(isset($blocks[$blockService]) && isset($blocks[$blockService]['templates'])) {
+            if (isset($blocks[$blockService]) && isset($blocks[$blockService]['templates'])) {
                 $container->setParameter('rz.news_page.post_templates', $blocks[$blockService]['templates']);
             }
         }
@@ -53,7 +53,7 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
         }
 
         foreach ($collections as $name => $settings) {
-            if($container->hasDefinition($settings['provider'])) {
+            if ($container->hasDefinition($settings['provider'])) {
                 $provider =$container->get($settings['provider']);
                 if ($provider instanceof \Rz\NewsPageBundle\Provider\Post\NewsPageProviderInterface) {
                     $definition = $container->getDefinition($settings['provider']);
@@ -74,6 +74,5 @@ class OverrideServiceCompilerPass implements CompilerPassInterface
         ########################################
         $definition = $container->getDefinition('rz.news_page.admin.post_has_page');
         $definition->addMethodCall('setSiteManager', array(new Reference('sonata.page.manager.site')));
-
     }
 }

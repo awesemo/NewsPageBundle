@@ -129,17 +129,16 @@ class RzNewsPageExtension extends Extension
         $pageService['post_canonical'] = $config['page']['services']['post_canonical']['service'];
         $container->setParameter('rz.news_page.page.services',                          $pageService);
 
-        if(!$config['page']['templates']) {
+        if (!$config['page']['templates']) {
             throw new \RuntimeException(sprintf('Please define a default `page_templates` value for the class `%s`', get_class($this)));
         }
 
         $pageTemplates = [];
-        foreach($config['page']['templates'] as $key=>$value) {
+        foreach ($config['page']['templates'] as $key=>$value) {
             $pageTemplates[$value['template_code']] = $value['name'];
         }
 
         $container->setParameter('rz.news_page.page.templates', $pageTemplates);
-
     }
 
     /**
@@ -177,14 +176,13 @@ class RzNewsPageExtension extends Extension
         $collector = DoctrineCollector::getInstance();
 
         if (interface_exists('Sonata\PageBundle\Model\PageInterface')) {
-
             $collector->addAssociation($config['class']['post_has_page'], 'mapManyToOne', array(
                 'fieldName' => 'post',
                 'targetEntity' => $config['class']['post'],
                 'cascade' => array(
                     'persist',
                 ),
-                'mappedBy' => NULL,
+                'mappedBy' => null,
                 'inversedBy' => 'postHasPage',
                 'joinColumns' => array(
                     array(
@@ -201,8 +199,8 @@ class RzNewsPageExtension extends Extension
                 'cascade' => array(
                     1 => 'detach',
                 ),
-                'mappedBy' => NULL,
-                'inversedBy' => NULL,
+                'mappedBy' => null,
+                'inversedBy' => null,
                 'joinColumns' => array(
                     array(
                         'name' => 'page_id',
@@ -219,8 +217,8 @@ class RzNewsPageExtension extends Extension
                 'cascade' => array(
                     1 => 'detach',
                 ),
-                'mappedBy' => NULL,
-                'inversedBy' => NULL,
+                'mappedBy' => null,
+                'inversedBy' => null,
                 'joinColumns' => array(
                     array(
                         'name' => 'block_id',
@@ -237,8 +235,8 @@ class RzNewsPageExtension extends Extension
                 'cascade' => array(
                     1 => 'detach',
                 ),
-                'mappedBy' => NULL,
-                'inversedBy' => NULL,
+                'mappedBy' => null,
+                'inversedBy' => null,
                 'joinColumns' => array(
                     array(
                         'name' => 'shared_block_id',
@@ -281,15 +279,14 @@ class RzNewsPageExtension extends Extension
             ));
 
             if (interface_exists('Sonata\ClassificationBundle\Model\CategoryInterface')) {
-
                 $collector->addAssociation($config['class']['post_has_page'], 'mapManyToOne', array(
                     'fieldName' => 'category',
                     'targetEntity' => $config['class']['category'],
                     'cascade' => array(
                         'persist',
                     ),
-                    'mappedBy' => NULL,
-                    'inversedBy' => NULL,
+                    'mappedBy' => null,
+                    'inversedBy' => null,
                     'joinColumns' => array(
                         array(
                             'name' => 'category_id',
@@ -306,8 +303,8 @@ class RzNewsPageExtension extends Extension
                 'cascade' => array(
                     'persist',
                 ),
-                'mappedBy' => NULL,
-                'inversedBy' => NULL,
+                'mappedBy' => null,
+                'inversedBy' => null,
                 'joinColumns' => array(
                     array(
                         'name' => 'post_has_page_id',
@@ -323,8 +320,8 @@ class RzNewsPageExtension extends Extension
                 'cascade' => array(
                     'persist',
                 ),
-                'mappedBy' => NULL,
-                'inversedBy' => NULL,
+                'mappedBy' => null,
+                'inversedBy' => null,
                 'joinColumns' => array(
                     array(
                         'name' => 'post_has_page_id',

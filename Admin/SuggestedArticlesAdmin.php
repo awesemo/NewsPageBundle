@@ -20,7 +20,6 @@ class SuggestedArticlesAdmin extends Admin
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
-
         if ($this->hasParentFieldDescription()) {
             $link_parameters = $this->getParentFieldDescription()->getOption('link_parameters', array());
         }

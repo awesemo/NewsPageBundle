@@ -46,7 +46,7 @@ class PostHasPageAdminController extends Controller
 
         $canonicalValues =  array(true,false);
 
-        if ($request->get('isCanonical') && in_array($request->get('isCanonical'),$canonicalValues)) {
+        if ($request->get('isCanonical') && in_array($request->get('isCanonical'), $canonicalValues)) {
             $isCanonical = $request->get('isCanonical');
         }
 
@@ -63,7 +63,7 @@ class PostHasPageAdminController extends Controller
             $collection = $collectiontManager->findOneBy(array('slug'=>$slugify->slugify($defaultCollection)));
         }
 
-        if($collection) {
+        if ($collection) {
             $datagrid->setValue('post__collection', null, $collection->getId());
         }
 

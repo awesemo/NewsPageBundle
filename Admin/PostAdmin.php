@@ -25,7 +25,6 @@ class PostAdmin extends Admin
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
-
         $this->initAdminFormStructure($formMapper);
 
         $formMapper
@@ -36,13 +35,13 @@ class PostAdmin extends Admin
                 ->add('title')
                 ->add('image', 'sonata_type_model_list', array('required' => false), array('link_parameters' => $this->getMediaSettings()))
                 ->end()
-                ->with('group_status', array('class' => 'col-md-4',))
+                ->with('group_status', array('class' => 'col-md-4', ))
                     ->add('enabled', null, array('required' => false))
                     ->add('publicationDateStart', 'sonata_type_datetime_picker', array('dp_side_by_side' => true))
                     ->add('publicationDateEnd',   'sonata_type_datetime_picker', array('dp_side_by_side' => true))
                 ->end()
 
-                ->with('group_content', array('class' => 'col-md-12',))
+                ->with('group_content', array('class' => 'col-md-12', ))
                     ->add('content', 'sonata_formatter_type', array(
                         'event_dispatcher'          => $formMapper->getFormBuilder()->getEventDispatcher(),
                         'format_field'              => 'contentFormatter',
@@ -99,7 +98,7 @@ class PostAdmin extends Admin
         # MEDIA
         ##############################
 
-        if($this->getPostHasMediaEnabled()) {
+        if ($this->getPostHasMediaEnabled()) {
             $formMapper
                 ->tab('tab.rz_news_media')
                     ->with('rz_news_media', array('class' => 'col-md-12'))
@@ -120,7 +119,7 @@ class PostAdmin extends Admin
         # RELATED ARTICLE
         ##############################
 
-        if($this->getRelatedArticleEnabled()) {
+        if ($this->getRelatedArticleEnabled()) {
             $formMapper
                 ->tab('tab.rz_news_related_articles')
                     ->with('rz_news_related_articles', array('class' => 'col-md-12'))
@@ -141,7 +140,7 @@ class PostAdmin extends Admin
         # SUGGESTED ARTICLE
         ##############################
 
-        if($this->getSuggestedArticleEnabled()) {
+        if ($this->getSuggestedArticleEnabled()) {
             $formMapper
                 ->tab('tab.rz_news_suggested_articles')
                     ->with('rz_news_suggested_articles', array('class' => 'col-md-12'))
@@ -178,7 +177,7 @@ class PostAdmin extends Admin
             ->end();
 
 
-        if($this->hasProvider()) {
+        if ($this->hasProvider()) {
             if ($instance && $instance->getId()) {
                 $this->getProvider()->load($instance);
                 $this->getProvider()->buildEditForm($formMapper, $instance);
@@ -190,7 +189,7 @@ class PostAdmin extends Admin
         if (!$this->hasProvider() && interface_exists('Sonata\PageBundle\Model\PageInterface')) {
             $formMapper
                 ->tab('tab.rz_news_settings')
-                    ->with('rz_news_settings', array('class' => 'col-md-12',))
+                    ->with('rz_news_settings', array('class' => 'col-md-12', ))
                         ->add('settings', 'sonata_type_immutable_array', array('keys' => array(), 'required' => false, 'label' => false, 'attr' => array('class' => 'rz-immutable-container')))
                     ->end()
                 ->end();
@@ -201,7 +200,7 @@ class PostAdmin extends Admin
         }
 
         //SEO PROVIDER
-        if($this->hasSeoProvider() && interface_exists('Sonata\PageBundle\Model\PageInterface')) {
+        if ($this->hasSeoProvider() && interface_exists('Sonata\PageBundle\Model\PageInterface')) {
             if ($instance && $instance->getId()) {
                 $this->seoProvider->load($instance);
                 $this->seoProvider->buildEditForm($formMapper, $instance);
@@ -211,8 +210,8 @@ class PostAdmin extends Admin
         }
     }
 
-    protected function initAdminFormStructure($formMapper) {
-
+    protected function initAdminFormStructure($formMapper)
+    {
         $formMapper
             ->tab('tab.rz_news')
                 ->with('group_post',           array('class' => 'col-md-8'))->end()
@@ -251,7 +250,7 @@ class PostAdmin extends Admin
                ->end();
         }
 
-        if($this->getPostHasMediaEnabled()) {
+        if ($this->getPostHasMediaEnabled()) {
             $formMapper
                 ->tab('tab.rz_news_media')
                     ->with('rz_news_media',  array('class' => 'col-md-12'))->end()
@@ -259,7 +258,7 @@ class PostAdmin extends Admin
         }
 
 
-        if($this->getRelatedArticleEnabled()) {
+        if ($this->getRelatedArticleEnabled()) {
             $formMapper
                 ->tab('tab.rz_news_related_articles')
                     ->with('rz_news_related_articles', array('class' => 'col-md-12'))->end()
@@ -267,7 +266,7 @@ class PostAdmin extends Admin
         }
 
 
-        if($this->getSuggestedArticleEnabled()) {
+        if ($this->getSuggestedArticleEnabled()) {
             $formMapper
                 ->tab('tab.rz_news_suggested_articles')
                     ->with('rz_news_suggested_articles', array('class' => 'col-md-12'))->end()
@@ -275,8 +274,8 @@ class PostAdmin extends Admin
         }
     }
 
-    protected function addPageTemplateCodeSettings($instance,$settingsField) {
-
+    protected function addPageTemplateCodeSettings($instance, $settingsField)
+    {
         if ($instance && $instance->getId() && $instance->getSetting('pageTemplateCode')) {
             $settingsField->add('pageTemplateCode',
                 'text',
@@ -431,7 +430,7 @@ class PostAdmin extends Admin
     public function postPersist($object)
     {
         parent::postPersist($object);
-        if($this->hasSeoProvider() && interface_exists('Sonata\PageBundle\Model\PageInterface')) {
+        if ($this->hasSeoProvider() && interface_exists('Sonata\PageBundle\Model\PageInterface')) {
             $this->getSeoProvider()->postPersist($object);
         }
 
@@ -447,7 +446,7 @@ class PostAdmin extends Admin
     public function postUpdate($object)
     {
         parent::postUpdate($object);
-        if($this->hasSeoProvider() && interface_exists('Sonata\PageBundle\Model\PageInterface')) {
+        if ($this->hasSeoProvider() && interface_exists('Sonata\PageBundle\Model\PageInterface')) {
             $this->getSeoProvider()->postUpdate($object);
         }
     }
@@ -473,11 +472,11 @@ class PostAdmin extends Admin
      */
     public function hasSeoProvider($interface = null)
     {
-        if(!$interface) {
+        if (!$interface) {
             return isset($this->seoProvider);
         }
 
-        if($this->seoProvider instanceof $interface) {
+        if ($this->seoProvider instanceof $interface) {
             return true;
         }
         return false;
@@ -521,13 +520,13 @@ class PostAdmin extends Admin
     public function validate(ErrorElement $errorElement, $object)
     {
         parent::validate($errorElement, $object);
-        if($this->hasSeoProvider()) {
+        if ($this->hasSeoProvider()) {
             $this->getSeoProvider()->validate($errorElement, $object);
         }
     }
 
-    public function getRelatedArticleSettings() {
-
+    public function getRelatedArticleSettings()
+    {
         $settings = parent::getRelatedArticleSettings();
         $settings = array_merge($settings, array('site'        => $this->getPersistentParameter('site'),
                                                  'hide_site'   => true,
@@ -535,8 +534,8 @@ class PostAdmin extends Admin
         return $settings;
     }
 
-    public function getSuggetedArticleSettings() {
-
+    public function getSuggetedArticleSettings()
+    {
         $settings = parent::getSuggetedArticleSettings();
         $settings = array_merge($settings, array('site'        => $this->getPersistentParameter('site'),
                                                  'hide_site'   => true,
