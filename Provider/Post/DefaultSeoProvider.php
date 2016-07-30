@@ -51,7 +51,7 @@ class DefaultSeoProvider extends BaseProvider
     {
         $formMapper
             ->tab('tab.rz_news_seo_settings')
-                ->with('rz_news_seo_settings', array('class' => 'col-md-12',))
+                ->with('rz_news_seo_settings', array('class' => 'col-md-12', ))
                     ->add('seoSettings', 'sonata_type_immutable_array', array('keys' => $this->getFormSettingsKeys($formMapper, $object), 'required'=>false, 'label'=>false, 'attr'=>array('class'=>'rz-immutable-container')))
                 ->end()
             ->end();
@@ -81,8 +81,8 @@ class DefaultSeoProvider extends BaseProvider
         return $settings;
     }
 
-    protected function getMediaBuilder(FormMapper $formMapper) {
-
+    protected function getMediaBuilder(FormMapper $formMapper)
+    {
         $mediaAdmin = clone $this->mediaAdmin;
         // simulate an association media...
         $fieldDescription =  $mediaAdmin->getModelManager()->getNewFieldDescriptionInstance($mediaAdmin->getClass(), 'media');
@@ -103,7 +103,8 @@ class DefaultSeoProvider extends BaseProvider
         );
     }
 
-    public function load(PostInterface $object) {
+    public function load(PostInterface $object)
+    {
         if (interface_exists('Sonata\MediaBundle\Model\MediaInterface')) {
             //load media
             $media = $object->getSeoSetting('ogImage', null);
@@ -114,7 +115,9 @@ class DefaultSeoProvider extends BaseProvider
         }
     }
 
-    public function getOptions(){}
+    public function getOptions()
+    {
+    }
 
     /**
      * @return mixed

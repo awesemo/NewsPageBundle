@@ -10,7 +10,6 @@ use Sonata\CoreBundle\Model\BaseEntityManager;
 use Sonata\NewsBundle\Model\PostInterface;
 use Sonata\CoreBundle\Model\ManagerInterface;
 
-
 /**
  * PageExtension.
  *
@@ -45,7 +44,8 @@ class NewsPageExtension extends \Twig_Extension implements \Twig_Extension_InitR
      *
      * @param BaseEntityManager $postHasPageManager
      */
-    public function __construct(ManagerInterface $postHasPageManager, ManagerInterface$categoryHasPageManager) {
+    public function __construct(ManagerInterface $postHasPageManager, ManagerInterface$categoryHasPageManager)
+    {
         $this->postHasPageManager  = $postHasPageManager;
         $this->categoryHasPageManager = $categoryHasPageManager;
     }
@@ -91,7 +91,7 @@ class NewsPageExtension extends \Twig_Extension implements \Twig_Extension_InitR
     {
         $postHasPage = $this->postHasPageManager->fetchCanonicalPage($post);
 
-        if(!$postHasPage) {
+        if (!$postHasPage) {
             return null;
         }
         return $postHasPage->getPage();
@@ -107,7 +107,7 @@ class NewsPageExtension extends \Twig_Extension implements \Twig_Extension_InitR
     {
         $postHasPage = $this->postHasPageManager->findOneByPostAndCategory(array('category'=>$category, 'post'=>$post, 'is_canonical'=>false));
 
-        if(!$postHasPage) {
+        if (!$postHasPage) {
             return null;
         }
 
@@ -124,7 +124,7 @@ class NewsPageExtension extends \Twig_Extension implements \Twig_Extension_InitR
     {
         $categoryHasPage = $this->categoryHasPageManager->findOneByCategory(array('category'=>$category));
 
-        if(!$categoryHasPage) {
+        if (!$categoryHasPage) {
             return null;
         }
         return $categoryHasPage->getPage();

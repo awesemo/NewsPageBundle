@@ -28,7 +28,6 @@ class PostHasPageAdmin extends Admin
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
-
         $formMapper->add('page', 'sonata_type_model_list', array('btn_delete' => false, 'btn_add' => false), array(
             'link_parameters' => array('context' => 'news', 'hide_context' => true, 'mode' => 'list'),
         ));
@@ -61,9 +60,9 @@ class PostHasPageAdmin extends Admin
     protected function configureDatagridFilters(DatagridMapper $filter)
     {
         $filter
-            ->add('post.site', null, array('show_filter' => false,))
-            ->add('post.collection', null, array('show_filter' => false,))
-            ->add('isCanonical', null, array('show_filter' => false,))
+            ->add('post.site', null, array('show_filter' => false, ))
+            ->add('post.collection', null, array('show_filter' => false, ))
+            ->add('isCanonical', null, array('show_filter' => false, ))
             ->add('post')
             ->add('page')
             ->add('enabled');
@@ -93,7 +92,8 @@ class PostHasPageAdmin extends Admin
         $this->siteManager = $siteManager;
     }
 
-    protected function getSite($siteId = null) {
+    protected function getSite($siteId = null)
+    {
         $sites = $this->getSiteManager()->findBy(array());
         $currentSite = null;
         foreach ($sites as $site) {

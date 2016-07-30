@@ -9,7 +9,8 @@ use Doctrine\Common\CommonException;
 
 class PostHasPageManager extends BaseEntityManager
 {
-    public function categoryParentWalker($category, &$categories=array()) {
+    public function categoryParentWalker($category, &$categories=array())
+    {
         while ($category->getParent()) {
             $categories[] = array('category'=>$category, 'parent'=>$category->getParent());
             return $this->categoryParentWalker($category->getParent(), $categories);
@@ -17,8 +18,8 @@ class PostHasPageManager extends BaseEntityManager
         return $categories;
     }
 
-    public function findOneByPost($criteria) {
-
+    public function findOneByPost($criteria)
+    {
         $query = $this->getRepository()
             ->createQueryBuilder('php')
             ->select('php');
@@ -40,13 +41,13 @@ class PostHasPageManager extends BaseEntityManager
 
         try {
             return $query->getQuery()->useResultCache(true, 3600)->getSingleResult();
-        } catch(\Doctrine\ORM\NoResultException $e) {
+        } catch (\Doctrine\ORM\NoResultException $e) {
             return;
         }
     }
 
-    public function findOneByPostAndCategory($criteria) {
-
+    public function findOneByPostAndCategory($criteria)
+    {
         $query = $this->getRepository()
             ->createQueryBuilder('php')
             ->select('php');
@@ -73,13 +74,13 @@ class PostHasPageManager extends BaseEntityManager
 
         try {
             return $query->getQuery()->useResultCache(true, 3600)->getSingleResult();
-        } catch(\Doctrine\ORM\NoResultException $e) {
+        } catch (\Doctrine\ORM\NoResultException $e) {
             return;
         }
     }
 
-    public function findOneByPageAndCategory($criteria) {
-
+    public function findOneByPageAndCategory($criteria)
+    {
         $query = $this->getRepository()
             ->createQueryBuilder('php')
             ->select('php');
@@ -101,13 +102,13 @@ class PostHasPageManager extends BaseEntityManager
 
         try {
             return $query->getQuery()->useResultCache(true, 3600)->getSingleResult();
-        } catch(\Doctrine\ORM\NoResultException $e) {
+        } catch (\Doctrine\ORM\NoResultException $e) {
             return;
         }
     }
 
-    public function findOneByPageAndPageHasPost($criteria) {
-
+    public function findOneByPageAndPageHasPost($criteria)
+    {
         $query = $this->getRepository()
             ->createQueryBuilder('php')
             ->select('php');
@@ -130,7 +131,7 @@ class PostHasPageManager extends BaseEntityManager
 
         try {
             return $query->getQuery()->useResultCache(true, 3600)->getSingleResult();
-        } catch(\Doctrine\ORM\NoResultException $e) {
+        } catch (\Doctrine\ORM\NoResultException $e) {
             return;
         }
     }
@@ -198,7 +199,7 @@ class PostHasPageManager extends BaseEntityManager
 
         try {
             return $qb->getQuery()->useResultCache(true, 3600)->getSingleResult();
-        } catch(\Doctrine\ORM\NoResultException $e) {
+        } catch (\Doctrine\ORM\NoResultException $e) {
             return;
         }
     }
@@ -265,7 +266,7 @@ class PostHasPageManager extends BaseEntityManager
 
         try {
             return $qb->getQuery()->useResultCache(true, 3600)->getSingleResult();
-        } catch(\Doctrine\ORM\NoResultException $e) {
+        } catch (\Doctrine\ORM\NoResultException $e) {
             return;
         }
     }
@@ -293,8 +294,8 @@ class PostHasPageManager extends BaseEntityManager
         return $qb->getQuery()->useResultCache(true, 3600)->execute();
     }
 
-    public function findOneByPage($criteria = []) {
-
+    public function findOneByPage($criteria = [])
+    {
         $qb = $this->getRepository()->createQueryBuilder('php');
         $qb->select('php')->join('php.page', 'p');
         $parameters = array();
@@ -319,7 +320,7 @@ class PostHasPageManager extends BaseEntityManager
 
         try {
             return $qb->getQuery()->useResultCache(true, 3600)->getSingleResult();
-        } catch(\Doctrine\ORM\NoResultException $e) {
+        } catch (\Doctrine\ORM\NoResultException $e) {
             return;
         }
     }

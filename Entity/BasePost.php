@@ -10,7 +10,6 @@ use Rz\NewsBundle\Model\RelatedArticlesInterface;
 use Rz\NewsBundle\Model\SuggestedArticlesInterface;
 use Rz\NewsPageBundle\Model\PostHasPageInterface;
 
-
 abstract class BasePost extends Post
 {
     protected $seoSettings;
@@ -128,7 +127,7 @@ abstract class BasePost extends Post
     public function addRelatedArticle(RelatedArticlesInterface $relatedArticle)
     {
         $relatedArticle->setPost($this);
-        if($relatedArticle->getPostHasPage()) {
+        if ($relatedArticle->getPostHasPage()) {
             $relatedArticle->setRelatedArticle($relatedArticle->getPostHasPage()->getPost());
         }
         $this->relatedArticles[] = $relatedArticle;
@@ -141,13 +140,14 @@ abstract class BasePost extends Post
     public function addSuggestedArticle(SuggestedArticlesInterface $suggestedArticle)
     {
         $suggestedArticle->setPost($this);
-        if($suggestedArticle->getPostHasPage()) {
+        if ($suggestedArticle->getPostHasPage()) {
             $suggestedArticle->setSuggestedArticle($suggestedArticle->getPostHasPage()->getPost());
         }
         $this->suggestedArticles[] = $suggestedArticle;
     }
 
-    public function __clone() {
+    public function __clone()
+    {
         parent::__clone();
         $this->seoSettings = null;
         $this->postHasPage = new ArrayCollection();

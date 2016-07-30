@@ -34,7 +34,7 @@ class DefaultProvider extends BaseProvider implements NewsPageProviderInterface
     {
         $formMapper
             ->tab('tab.rz_news_settings')
-                ->with('rz_news_settings', array('class' => 'col-md-12',))
+                ->with('rz_news_settings', array('class' => 'col-md-12', ))
                     ->add('settings', 'sonata_type_immutable_array', array('keys' => $this->getFormSettingsKeys($formMapper, $object), 'required'=>false, 'label'=>false, 'attr'=>array('class'=>'rz-immutable-container')))
                 ->end()
             ->end();
@@ -49,8 +49,7 @@ class DefaultProvider extends BaseProvider implements NewsPageProviderInterface
     {
         $settings = [];
 
-        if($this->getIsControllerEnabled() || $object->isNew() || !$object->getSetting('template')) {
-
+        if ($this->getIsControllerEnabled() || $object->isNew() || !$object->getSetting('template')) {
             $settings[] = array('template',
                                 'choice',
                                 array('choices'=>$this->getTemplates(),
@@ -113,13 +112,16 @@ class DefaultProvider extends BaseProvider implements NewsPageProviderInterface
         $this->defaultTemplate = $defaultTemplate;
     }
 
-    public function getPreferedChoice() {
+    public function getPreferedChoice()
+    {
         $template = $this->getDefaultTemplate() ?: null;
-        if($template) {
+        if ($template) {
             return array($template);
         }
         return [];
     }
 
-    public function load(PostInterface $object) {}
+    public function load(PostInterface $object)
+    {
+    }
 }

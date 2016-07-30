@@ -110,7 +110,6 @@ class PostBlockService extends BaseBlockService
      */
     public function buildEditForm(FormMapper $formMapper, BlockInterface $block)
     {
-
         if (!$block->getSetting('postId') instanceof PostInterface) {
             $this->load($block);
         }

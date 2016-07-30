@@ -127,7 +127,6 @@ class PostListByCategoryBlockService extends BaseBlockService
      */
     public function buildEditForm(FormMapper $formMapper, BlockInterface $block)
     {
-
         if (!$block->getSetting('categoryId') instanceof CategoryInterface) {
             $this->load($block);
         }

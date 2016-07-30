@@ -166,7 +166,7 @@ class Configuration implements ConfigurationInterface
      */
     private function addPermalinkSection(ArrayNodeDefinition $node)
     {
-         $node
+        $node
             ->children()
                 ->arrayNode('permalink')
                     ->addDefaultsIfNotSet()

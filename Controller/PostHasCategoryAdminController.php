@@ -50,7 +50,7 @@ class PostHasCategoryAdminController extends Controller
 
         if ($request->get('category')) {
             $category = $this->container->get('sonata.classification.manager.category')->findOneBy(array('id' => (int) $request->get('category')));
-            if($category) {
+            if ($category) {
                 $currentCategory = array('id'=>$category->getId(), 'name'=>$category->getName(), 'parent'=>$category->getParent() ? $category->getParent()->getName() : null);
             }
         }

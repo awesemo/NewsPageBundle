@@ -84,7 +84,7 @@ class PostPageService extends BasePageService
         $this->seoPage->addMeta('property', 'og:type', 'article');
         $this->seoPage->addHtmlAttributes('prefix', 'og: http://ogp.me/ns#');
 
-        if($page->getCanonicalPage()) {
+        if ($page->getCanonicalPage()) {
             $this->seoPage->setLinkCanonical($this->router->generate($page->getCanonicalPage(), array(), ChainedRouterInterface::ABSOLUTE_URL));
         }
     }
