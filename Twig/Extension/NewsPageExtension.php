@@ -94,7 +94,6 @@ class NewsPageExtension extends \Twig_Extension implements \Twig_Extension_InitR
         if(!$postHasPage) {
             return null;
         }
-
         return $postHasPage->getPage();
     }
 
